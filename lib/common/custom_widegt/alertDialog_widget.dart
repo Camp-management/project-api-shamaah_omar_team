@@ -1,5 +1,7 @@
 
 import 'package:flutter/material.dart';
+import 'package:smart_notes/model/bookmarks/create_bookmarks/create_bookmarks_model.dart';
+import 'package:smart_notes/model/bookmarks/update_bookmarks/update_bookmarks_model.dart';
 
 import '../../model/folder/create_folder/create_folder_model.dart';
 import '../../model/folder/folder_model.dart';
@@ -7,8 +9,11 @@ import '../../model/folder/update_folder/update_folder_model.dart';
 import '../../network/network_api.dart';
 
 class AlertdialogWidget extends StatefulWidget {
-  final String id,type;
-  const AlertdialogWidget({super.key, required this.id, required this.type});
+  final String id,type, method,folderId;
+  const AlertdialogWidget({super.key, required this.id,
+    required this.type,
+  required this.method,
+  required this.folderId});
 
   @override
   State<AlertdialogWidget> createState() => _AlertdialogWidgetState();
@@ -29,14 +34,19 @@ class _AlertdialogWidgetState extends State<AlertdialogWidget> {
   @override
   Widget build(BuildContext context) {
     return
-      buildAlertDialog(context,widget.type,widget.id,controllerName,controllerDesc,controllerColor);
+      buildAlertDialog(context,widget.type, widget.method,
+          widget.id,
+          widget.folderId,
+          controllerName,controllerDesc,controllerColor);
 
   }
 
   AlertDialog buildAlertDialog(BuildContext context,type,
-      id,controllerName,controllerDesc,controllerColor) {
+      method,
+      id,folderId,controllerName,controllerDesc,controllerColor) {
     return AlertDialog(
-      title: Text("$type Folder"),
+      title:
+      Text("$method $type"),
       content: SizedBox(
         height: 200,
         child: Column(
@@ -45,21 +55,21 @@ class _AlertdialogWidgetState extends State<AlertdialogWidget> {
             TextField(
               controller: controllerName,
               decoration: InputDecoration(
-                labelText: "Folder Name",
+                labelText: type == "Folder" ? "Folder Name" : "Bookmark URL",
                 border: OutlineInputBorder(),
               ),
             ),
             TextField(
               controller: controllerDesc,
               decoration: InputDecoration(
-                labelText: "Folder Desc",
+                labelText:  type == "Folder" ?  "Folder Desc" : "Bookmark Desc",
                 border: OutlineInputBorder(),
               ),
             ),
             TextField(
               controller: controllerColor,
               decoration: InputDecoration(
-                labelText: "Folder Color",
+                labelText:  type == "Folder" ?  "Folder Color" : "Bookmark Content Type",
                 border: OutlineInputBorder(),
               ),
             ),
@@ -77,7 +87,7 @@ class _AlertdialogWidgetState extends State<AlertdialogWidget> {
           onPressed: () async {
             try {
 
-             if(type == "Update") {
+             if(type == "Folder" && method == "Update") {
                UpdateFolderModel data = UpdateFolderModel(
                  id: id,
                  name: controllerName.text,
@@ -88,7 +98,7 @@ class _AlertdialogWidgetState extends State<AlertdialogWidget> {
                   inputData: data,
                 );
               }
-              else{
+              else if(type == "Folder"  && method == "Create"){
                CreateFolderModel data = CreateFolderModel(
                  name: controllerName.text,
                  desc: controllerDesc.text,
@@ -97,13 +107,42 @@ class _AlertdialogWidgetState extends State<AlertdialogWidget> {
                  final response = await api.folderObj.createFolders(
                              inputData: data);
              }
+             else if (type == "Bookmark" && method == "Create") {
+               CreateBookmarksModel data = CreateBookmarksModel(
+                   url: controllerName.text,
+                   desc: controllerDesc.text,
+                   content_type:  controllerColor.text,
+                   is_ticked: false,
+                   folder_id: folderId
+               );
+               final response = await api.bookmarksMethod.createBookmark(
+                 inputData: data,
+               );
+             }
+             else if (type == "Bookmark" && method == "Update") {
+               print(id);
+               print(folderId);
+               UpdateBookmarksModel data = UpdateBookmarksModel(
+                   id: id,
+                   url: controllerName.text,
+                   desc: controllerDesc.text,
+                   content_type:  controllerColor.text,
+                   is_ticked: false,
+                   folder_id: folderId
+               );
+               final response = await api.bookmarksMethod.updateBookmarks(
+                 inputData: data,
+               );
+             }
+               Navigator.pop(context, true);
 
-                Navigator.pop(context, true);
+               ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+                 SnackBar(backgroundColor: Colors.green,
+                     content: Text("$type has been  ${method == "Update"
+                         ? "Updated"
+                         : "Created" }")),
+               );
 
-              ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-                SnackBar(backgroundColor: Colors.green,
-                    content: Text("Folder has been  ${type == "Update" ? "Updated" :"Created" }")),
-              );
             } on FormatException catch (error) {
               // ScaffoldMessenger.maybeOf(
               // context,
@@ -117,7 +156,7 @@ class _AlertdialogWidgetState extends State<AlertdialogWidget> {
             }
             //  Navigator.pop(context);
           },
-          child: Text(type=="Update"? "add": "update"),
+          child: Text(method=="Update"? "update": "create"),
         ),
       ],
     );
