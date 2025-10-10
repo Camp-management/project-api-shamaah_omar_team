@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 
 import '../model/folder/create_folder/create_folder_model.dart';
 import '../model/folder/folder_model.dart';
+import '../model/folder/update_folder/update_folder_model.dart';
 import 'constant_api.dart';
 
 class FolderApi {
@@ -16,17 +17,17 @@ class FolderApi {
     try {
       var url = Uri.parse(_constant.baseURL+_constant.folderEndPoint);
       var response = await http.get(url,headers: _constant.foldersHeader);
-      print("URL ${response.statusCode.toString()}");
+     // print("URL ${response.statusCode.toString()}");
 
       if (response.statusCode.toString().startsWith("2")) {
         final folder= jsonDecode(response.body);
-        print(folder);
+    //    print(folder);
 
         List<FolderModel>
         allFolders =
        List.from( folder ?? []).map((item) =>
            FolderModelMapper.fromMap(item)).toList();
-        print("allFolders : $allFolders");
+        //print("allFolders : $allFolders");
         return allFolders;
         /// call Mapper to show data
         // return AuthModelMapper.fromJson(response.body);
@@ -50,21 +51,22 @@ class FolderApi {
     try {
       var url = Uri.parse(_constant.baseURL+_constant.createFolderEndPoint);
       var response = await http.post(url,
-          headers: // _constant.foldersHeader,
-          {"Accept": "application/json",
-            "Authorization" :
-            "Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6ImVrT3MrMlluOXROd1hwYzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL21pb3Fvb21yYmp2eGdwdmJ5cmpjLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlNDlmZGJlMC1hZDIxLTQ4MDItYTAyMi0xYTFlZjIzZmYyZmIiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzYwMDQ4MzU1LCJpYXQiOjE3NjAwNDQ3NTUsImVtYWlsIjoic2hhbWFhaEBleGFtcGxlLmNvbSIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWwiOiJzaGFtYWFoQGV4YW1wbGUuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZTQ5ZmRiZTAtYWQyMS00ODAyLWEwMjItMWExZWYyM2ZmMmZiIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjAwNDQ3NTV9XSwic2Vzc2lvbl9pZCI6IjcwMGVmZjQ4LTg2YmEtNDljMC1iZjk3LWU4YzIzNTczYjBlMiIsImlzX2Fub255bW91cyI6ZmFsc2V9.dLAM7wwLlcGSo-C6ZJpNDt9jsQS8RLjyTVeVW1oBflk"}
-      , body: jsonEncode(inputData.toJson())
+          headers:  _constant.updateCreateHeader,
+         body: inputData.toJson()
       );
       print("URL $url");
-      print("body ${inputData.toJson().runtimeType}");
+      print("body ${inputData.toJson()}");
 
       print("response ${response.body.toString()}");
       if (response.statusCode.toString().startsWith("2")) {
-        final folder=// jsonDecode(response.body);
-        //print(folder);
-        CreateFolderModelMapper.fromJson(jsonDecode(response.body));
+        // final folder=// jsonDecode(response.body);
+        // CreateFolderModelMapper.fromMap(jsonDecode(response.body));
+        final json = jsonDecode(response.body);
+        final data = json['data'];
 
+        final folder = CreateFolderModelMapper.fromMap(data);
+
+        print(folder);
         return folder;
         /// call Mapper to show data
         // return AuthModelMapper.fromJson(response.body);
@@ -80,6 +82,7 @@ class FolderApi {
       throw Exception(error);
     }
   }
+
   // Future<List<ProductModel>>
   // getProduct(int id)
   // async {
@@ -109,4 +112,84 @@ class FolderApi {
   //   }
   // }
 
+///delete folder
+  Future
+  deleteFolders({required String id})
+  async {
+    try {
+      var url = Uri.parse("${_constant.baseURL}${_constant.deleteFolderEndPoint}$id");
+      var response = await http.delete(url,
+          headers:  _constant.foldersHeader,   );
+
+      print("URL $url");
+    //  print("body ${inputData.toJson().runtimeType}");
+
+      print("response ${response.body.toString()}");
+      if (response.statusCode.toString().startsWith("2")) {
+        final folder= jsonDecode(response.body);
+        //print(folder);
+       // CreateFolderModelMapper.fromJson(jsonDecode(response.body));
+
+        return folder;
+        /// call Mapper to show data
+        // return AuthModelMapper.fromJson(response.body);
+      }
+      //   throw FormatException("Issue in get all Folder!!");
+      throw FormatException();
+
+    }
+    on FormatException catch(_){
+      rethrow;
+    }
+    catch (error){
+      throw Exception(error);
+    }
+  }
+
+
+  ///update folder
+  Future<UpdateFolderModel>
+  updateFolders({//required String id,
+     required UpdateFolderModel inputData
+     //String name,  required String desc,  required String color
+  })
+  async {
+    try {
+      var url = Uri.parse("${_constant.baseURL}${_constant.updateFolderEndPoint}${inputData.id}");
+      var response = await http.put(url,
+        headers:  _constant.updateCreateHeader,
+      body:
+      // {
+      //   "id": id,
+    inputData.toJson()
+        ///"parent_folder": ""
+     // }
+      );
+
+      // print("URL $url ${response.statusCode}");
+      //  print(inputData.toJson());
+    //  print(jsonEncode(inputData.toJson()).runtimeType);
+     // print("response ${response.body.toString()}");
+      if (response.statusCode.toString().startsWith("2")) {
+        final folder= //jsonDecode(response.body);
+        UpdateFolderModelMapper.fromMap(jsonDecode(response.body));
+
+       // print(folder);
+        return folder;
+        /// call Mapper to show data
+        // return AuthModelMapper.fromJson(response.body);
+      }
+      //   throw FormatException("Issue in get all Folder!!");
+      throw FormatException();
+
+    }
+    on FormatException catch(errorg){
+      print(errorg.message);
+      throw FormatException(errorg.message);
+    }
+    catch (error){
+      print(error.toString());
+      throw Exception(error);
+    }
+  }
 }
