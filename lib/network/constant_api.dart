@@ -1,0 +1,26 @@
+class ConstantApi{
+  final baseURL="https://api-week.onrender.com";
+ // final authLoginEndPoint="/auth/login";
+  final folderEndPoint="/folders";
+  final createFolderEndPoint="/folder/create/";
+  final updateFolderEndPoint="/folder/update/";
+  final deleteFolderEndPoint="/folder/delete/";
+  Map<String,String> header = {"Accept": "application/json"};
+
+  final token = "Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6ImVrT3MrMlluOXROd1hwYzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL21pb3Fvb21yYmp2eGdwdmJ5cmpjLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlNDlmZGJlMC1hZDIxLTQ4MDItYTAyMi0xYTFlZjIzZmYyZmIiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzYwMDk4NDQzLCJpYXQiOjE3NjAwOTQ4NDMsImVtYWlsIjoic2hhbWFhaEBleGFtcGxlLmNvbSIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWwiOiJzaGFtYWFoQGV4YW1wbGUuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZTQ5ZmRiZTAtYWQyMS00ODAyLWEwMjItMWExZWYyM2ZmMmZiIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjAwOTQ4NDN9XSwic2Vzc2lvbl9pZCI6IjMyMjFmNjljLWFhZTItNGIyYi1iZTUzLWZlNGU3MjBlYmZiMiIsImlzX2Fub255bW91cyI6ZmFsc2V9.BNF_baZBX4w8yN-ppJ-1zWIdElvjWPfidGt02H_EhqE";
+
+
+   late Map<String,String> foldersHeader =
+    {"Accept": "application/json",
+     // "Content-Type": "application/json",
+  "Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6ImVrT3MrMlluOXROd1hwYzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL21pb3Fvb21yYmp2eGdwdmJ5cmpjLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlNDlmZGJlMC1hZDIxLTQ4MDItYTAyMi0xYTFlZjIzZmYyZmIiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzYwMDk4NDQzLCJpYXQiOjE3NjAwOTQ4NDMsImVtYWlsIjoic2hhbWFhaEBleGFtcGxlLmNvbSIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWwiOiJzaGFtYWFoQGV4YW1wbGUuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZTQ5ZmRiZTAtYWQyMS00ODAyLWEwMjItMWExZWYyM2ZmMmZiIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjAwOTQ4NDN9XSwic2Vzc2lvbl9pZCI6IjMyMjFmNjljLWFhZTItNGIyYi1iZTUzLWZlNGU3MjBlYmZiMiIsImlzX2Fub255bW91cyI6ZmFsc2V9.BNF_baZBX4w8yN-ppJ-1zWIdElvjWPfidGt02H_EhqE"
+}
+;
+
+  late Map<String,String> updateCreateHeader =
+  {"Accept": "application/json",
+     "Content-Type": "application/json",
+    "Authorization" :token
+  }
+  ;
+}

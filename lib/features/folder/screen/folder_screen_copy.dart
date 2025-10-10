@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:smart_notes/model/folder/create_folder/create_folder_model.dart';
 import 'package:smart_notes/model/folder/folder_model.dart';
@@ -6,14 +7,14 @@ import 'package:smart_notes/model/folder/folder_model.dart';
 import '../../../common/custom_widegt/alertDialog_widget.dart';
 import '../../../network/network_api.dart';
 
-class FolderScreen extends StatefulWidget {
-  const FolderScreen({super.key});
+class FolderScreenCopy extends StatefulWidget {
+  const FolderScreenCopy({super.key});
 
   @override
-  State<FolderScreen> createState() => _FolderScreenState();
+  State<FolderScreenCopy> createState() => _FolderScreenCopyState();
 }
 
-class _FolderScreenState extends State<FolderScreen> {
+class _FolderScreenCopyState extends State<FolderScreenCopy> {
   final api = NetworkApi();
 
   List<FolderModel> allFolder = [];
@@ -63,36 +64,83 @@ class _FolderScreenState extends State<FolderScreen> {
                           // price: item.price,
                           // )
                           // ));
-                        },
-                        child: ListTile(
+                        },child:
+            Slidable(
+              // Specify a key if the Slidable is dismissible.
+                key: const ValueKey(0),
+
+                // The end action pane is the one at the right or the bottom side.
+                endActionPane: ActionPane(
+                  motion: const ScrollMotion(),
+                  // A pane can dismiss the Slidable.
+                  //dismissible: DismissiblePane(onDismissed: () {}),
+                  children: [
+                    SlidableAction(
+                      // An action can be bigger than the others.
+                   //   flex: 2,
+                      onPressed: (_)   async {
+                        await showDialog(
+                            context: context,
+                            builder: (_) =>
+                                AlertdialogWidget(type:"Update",id: item.id.toString(),)
+                        );
+
+                        await loadData();
+
+                      },
+                      backgroundColor: const  Color(0xFF21B7CA),
+                      foregroundColor: Colors.white,
+                      icon: Icons.archive,
+                      label: 'Edit',
+                    ),
+                    SlidableAction(
+                      onPressed: (_) async{
+                       await api.folderObj.deleteFolders(id: item.id.toString());
+                      //setState(() {
+                       await loadData();
+                     // });
+                       },
+                      backgroundColor: Color(0xFFFE4A49),
+                      foregroundColor: Colors.white,
+                      icon: Icons.delete,
+                      label: 'Delete',
+                    ),
+                  ],
+                ),
+
+                child:
+               ListTile(
                          // leading: Text(item.id.toString()),
                           title: Text(item.name),
-                           subtitle:
-                           InkWell(
-                              onTap: ()  async {
-                             await showDialog(
-                                  context: context,
-                                  builder: (_) =>
-                                       AlertdialogWidget(type:"Update",id: item.id.toString(),)
-                                );
-
-                                await loadData();
-
-                              },
-                              child: Icon(Icons.edit_note_outlined,
-                                color: Colors.blueAccent,)),
-                          trailing:
-                          InkWell(
-                            onTap: (){
-                             // print(item.id.toString());
-                              api.folderObj.deleteFolders(id: item.id.toString());
-                            setState(() {
-                              loadData();
-                            });
-                            },
-                              child: Icon(Icons.delete_outline_outlined,
-                                color: Colors.red,))
+                           trailing: Icon(Icons.swap_horiz),
+                           // subtitle:
+                           // InkWell(
+                           //    onTap: ()
+                           //    async {
+                           //   await showDialog(
+                           //        context: context,
+                           //        builder: (_) =>
+                           //             AlertdialogWidget(type:"Update",id: item.id.toString(),)
+                           //      );
+                           //
+                           //      await loadData();
+                           //
+                           //    },
+                           //    child: Icon(Icons.edit_note_outlined,
+                           //      color: Colors.blueAccent,)),
+                          // trailing:
+                          // InkWell(
+                          //   onTap: (){
+                          //    // print(item.id.toString());
+                          //     api.folderObj.deleteFolders(id: item.id.toString());
+                          //   setState(() {
+                          //     loadData();
+                          //   });
+                          //   },
+                          //     child: Icon(Icons.delete_outline_outlined,
+                          //       color: Colors.red,))
                         ),
+            )
                       ),
                     ),
                   ),
