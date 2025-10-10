@@ -14,7 +14,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final api = NetworkApi();
-
   String? token;
 
   final TextEditingController controllerUserName = TextEditingController(
@@ -25,6 +24,32 @@ class _LoginScreenState extends State<LoginScreen> {
   );
 
   @override
+  void initState() {
+    super.initState();
+    _redirectIfLoggedIn();
+  }
+
+  Future<void> _redirectIfLoggedIn() async {
+    // Read token from storage
+    final box = GetStorage();
+    final saved = box.read<String>('token');
+
+    if (saved != null && saved.isNotEmpty) {
+      // Optional: attach to your API headers globally if you do that
+      // api.authMethod.setToken(saved); // if you exposed such a method
+
+      // Navigate after first frame to avoid context issues in initState
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const FolderScreenCopy()),
+        );
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
@@ -32,7 +57,6 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-
             children: [
               TextField(
                 controller: controllerUserName,
@@ -55,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ElevatedButton(
                 onPressed: () async {
                   try {
-                    AuthInput data = AuthInput(
+                    final data = AuthInput(
                       email: controllerUserName.text,
                       password: controllerPassword.text,
                     );
@@ -66,15 +90,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     token = response.access_token;
                     final box = GetStorage();
-                    box.write("token", token);
+                    await box.write("token", token);
 
-                    setState(() {
-                      // token = response.access_token;
-                    });
-
-                    // For debugging only (avoid logging tokens in prod)
-                    debugPrint('TOKEN: $token');
-
+                    if (!mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Signed in successfully')),
                     );
@@ -82,14 +100,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => FolderScreenCopy(),
+                        builder: (context) => const FolderScreenCopy(),
                       ),
                     );
                   } on FormatException catch (error) {
+                    if (!mounted) return;
                     ScaffoldMessenger.of(
                       context,
                     ).showSnackBar(SnackBar(content: Text(error.message)));
                   } catch (error) {
+                    if (!mounted) return;
                     ScaffoldMessenger.of(
                       context,
                     ).showSnackBar(SnackBar(content: Text(error.toString())));
@@ -97,14 +117,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 },
                 child: const Text("Login"),
               ),
-              Text("You don't have an account?"),
+              const SizedBox(height: 8),
+              const Text("You don't have an account?"),
               TextButton(
-                child: Text('Sign Up'),
-
+                child: const Text('Sign Up'),
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => SignupScreen()),
+                    MaterialPageRoute(builder: (_) => const SignupScreen()),
                   );
                 },
               ),
