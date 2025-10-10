@@ -73,7 +73,10 @@ class _FolderScreenState extends State<FolderScreen> {
                              await showDialog(
                                   context: context,
                                   builder: (_) =>
-                                       AlertdialogWidget(type:"Update",id: item.id.toString(),)
+                                       AlertdialogWidget(type:"Folder",
+                                           method:"Update"
+                                         ,id: item.id.toString(),
+                                           folderId:"")
                                 );
 
                                 await loadData();
@@ -108,7 +111,9 @@ class _FolderScreenState extends State<FolderScreen> {
           await showDialog(
           context: context,
           builder: (_) =>
-              AlertdialogWidget(type:"Create",id: "")
+              AlertdialogWidget(type:"Folder",
+                  method:"Update" ,id: "",
+                  folderId:"")
           );
 
           await loadData();
