@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:smart_notes/features/auth/screen/signup_screen.dart';
+import 'package:smart_notes/features/folder/screen/folder_screen_copy.dart';
 import 'package:smart_notes/model/auth_input/auth_input.dart';
 import 'package:smart_notes/network/network_api.dart';
 
@@ -76,6 +78,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Signed in successfully')),
                     );
+
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => FolderScreenCopy(),
+                      ),
+                    );
                   } on FormatException catch (error) {
                     ScaffoldMessenger.of(
                       context,
@@ -88,12 +97,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 },
                 child: const Text("Login"),
               ),
+              Text("You don't have an account?"),
+              TextButton(
+                child: Text('Sign Up'),
 
-              // Optional: show it in UI while debugging
-              if (token != null) ...[
-                const SizedBox(height: 12),
-                Text(token!, style: const TextStyle(fontSize: 12)),
-              ],
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => SignupScreen()),
+                  );
+                },
+              ),
             ],
           ),
         ),

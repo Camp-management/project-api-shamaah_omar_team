@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:smart_notes/features/auth/screen/login_screen.dart';
+import 'package:smart_notes/features/auth/screen/signup_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding().ensureSemantics();

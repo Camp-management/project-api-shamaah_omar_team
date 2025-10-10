@@ -1,5 +1,8 @@
+import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
-import 'package:smart_notes/model/auth/auth_model.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:smart_notes/features/auth/screen/login_screen.dart';
+import 'package:smart_notes/features/folder/screen/folder_screen_copy.dart';
 import 'package:smart_notes/model/auth_input/auth_input.dart';
 import 'package:smart_notes/network/network_api.dart';
 
@@ -30,7 +33,6 @@ class _SignupScreenState extends State<SignupScreen> {
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-
             children: [
               TextField(
                 controller: controllerUserName,
@@ -53,46 +55,86 @@ class _SignupScreenState extends State<SignupScreen> {
               ElevatedButton(
                 onPressed: () async {
                   try {
-                    final data = AuthInput(
+                    AuthInput data = AuthInput(
                       email: controllerUserName.text,
                       password: controllerPassword.text,
                     );
 
-                    final AuthModel response = await api.authMethod
-                        .signupAccount(authData: data);
+                    final response = await api.authMethod.signupAccount(
+                      authData: data,
+                    );
+
+                    // token = response.access_token;
+                    // final box = GetStorage();
+                    // box.write("token", token);
 
                     setState(() {
-                      token = response.access_token;
-                      print(token);
+                      // token = response.access_token;
                     });
 
-                    // For debugging only (avoid logging tokens in prod)
-                    debugPrint('TOKEN: $token');
-
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Signed in successfully')),
+                      const SnackBar(content: Text('Signed up successfully')),
+                    );
+
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const FolderScreenCopy(),
+                      ),
+                    );
+                  } on MapperException catch (error) {
+                    // Handle cases where the mapper fails to parse the response
+                    // (e.g., signup returns no token or different JSON shape)
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Signup succeeded but parsing failed: ${error.toString()}',
+                        ),
+                      ),
                     );
                   } on FormatException catch (error) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(error.message)));
+                    final msg = error.toString();
+                    if (msg.contains('MapperException')) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Signup response couldn\'t be parsed: $msg',
+                          ),
+                        ),
+                      );
+                    }
                   } catch (error) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(error.toString())));
+                    // Fallback: if your mapper throws a different type but includes "Mapper"
+                    final msg = error.toString();
+                    if (msg.contains('MapperException')) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Signup response couldn\'t be parsed: $msg',
+                          ),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(msg)));
+                    }
                   }
                 },
                 child: const Text("Signup"),
               ),
 
-              // Optional: show it in UI while debugging
-              if (token != null) ...[
-                const SizedBox(height: 12),
-                Text(
-                  'Token (debug): ${token!.substring(0, 20)}...',
-                  style: const TextStyle(fontSize: 12),
-                ),
-              ],
+              Text("You alrady have an account?"),
+              TextButton(
+                child: Text('Sign in'),
+
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()),
+                  );
+                },
+              ),
             ],
           ),
         ),
