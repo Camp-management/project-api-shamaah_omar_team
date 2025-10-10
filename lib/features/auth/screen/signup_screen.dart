@@ -62,7 +62,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         .signupAccount(authData: data);
 
                     setState(() {
-                      token = response.token;
+                      token = response.access_token;
                       print(token);
                     });
 

@@ -21,14 +21,19 @@ class AuthModelMapper extends ClassMapperBase<AuthModel> {
   @override
   final String id = 'AuthModel';
 
-  static String _$token(AuthModel v) => v.token;
-  static const Field<AuthModel, String> _f$token = Field('token', _$token);
+  static String _$access_token(AuthModel v) => v.access_token;
+  static const Field<AuthModel, String> _f$access_token = Field(
+    'access_token',
+    _$access_token,
+  );
 
   @override
-  final MappableFields<AuthModel> fields = const {#token: _f$token};
+  final MappableFields<AuthModel> fields = const {
+    #access_token: _f$access_token,
+  };
 
   static AuthModel _instantiate(DecodingData data) {
-    return AuthModel(data.dec(_f$token));
+    return AuthModel(data.dec(_f$access_token));
   }
 
   @override
@@ -90,7 +95,7 @@ extension AuthModelValueCopy<$R, $Out> on ObjectCopyWith<$R, AuthModel, $Out> {
 
 abstract class AuthModelCopyWith<$R, $In extends AuthModel, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
-  $R call({String? token});
+  $R call({String? access_token});
   AuthModelCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -103,11 +108,12 @@ class _AuthModelCopyWithImpl<$R, $Out>
   late final ClassMapperBase<AuthModel> $mapper =
       AuthModelMapper.ensureInitialized();
   @override
-  $R call({String? token}) =>
-      $apply(FieldCopyWithData({if (token != null) #token: token}));
+  $R call({String? access_token}) => $apply(
+    FieldCopyWithData({if (access_token != null) #access_token: access_token}),
+  );
   @override
   AuthModel $make(CopyWithData data) =>
-      AuthModel(data.get(#token, or: $value.token));
+      AuthModel(data.get(#access_token, or: $value.access_token));
 
   @override
   AuthModelCopyWith<$R2, AuthModel, $Out2> $chain<$R2, $Out2>(

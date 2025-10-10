@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:smart_notes/features/auth/screen/login_screen.dart';
-import 'package:smart_notes/features/auth/screen/signup_screen.dart';
-import 'features/folder/screen/folder_screen.dart';
-import 'features/folder/screen/folder_screen_copy.dart';
-import 'features/folder/screen/folder_test.dart';
 
 void main() async {
+  WidgetsFlutterBinding().ensureSemantics();
+  await GetStorage.init();
+
   runApp(const MyApp());
 }
 

@@ -6,7 +6,7 @@ part 'auth_model.mapper.dart';
 
 @MappableClass()
 class AuthModel with AuthModelMappable {
-  final String token;
+  final String access_token;
 
-  AuthModel(this.token);
+  AuthModel(this.access_token);
 }

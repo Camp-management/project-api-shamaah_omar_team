@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:smart_notes/model/auth/auth_model.dart';
 import 'package:smart_notes/model/auth_input/auth_input.dart';
@@ -17,7 +19,8 @@ class AuthApi {
 
       if (response.statusCode.toString().startsWith('2')) {
         print(response.body);
-        return AuthModelMapper.fromJson(response.body);
+        // return AuthModelMapper.fromJson(response.body);
+        return AuthModelMapper.fromMap(jsonDecode(response.body));
       }
 
       throw FormatException("There is error with your data try send it");

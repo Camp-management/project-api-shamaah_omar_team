@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smart_notes/model/auth/auth_model.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:smart_notes/model/auth_input/auth_input.dart';
 import 'package:smart_notes/network/network_api.dart';
 
@@ -53,16 +53,21 @@ class _LoginScreenState extends State<LoginScreen> {
               ElevatedButton(
                 onPressed: () async {
                   try {
-                    final data = AuthInput(
+                    AuthInput data = AuthInput(
                       email: controllerUserName.text,
                       password: controllerPassword.text,
                     );
 
-                    final AuthModel response = await api.authMethod
-                        .loginAccount(authData: data);
+                    final response = await api.authMethod.loginAccount(
+                      authData: data,
+                    );
+
+                    token = response.access_token;
+                    final box = GetStorage();
+                    box.write("token", token);
 
                     setState(() {
-                      token = response.token;
+                      // token = response.access_token;
                     });
 
                     // For debugging only (avoid logging tokens in prod)
@@ -87,10 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
               // Optional: show it in UI while debugging
               if (token != null) ...[
                 const SizedBox(height: 12),
-                Text(
-                  'Token (debug): ${token!.substring(0, 20)}...',
-                  style: const TextStyle(fontSize: 12),
-                ),
+                Text(token!, style: const TextStyle(fontSize: 12)),
               ],
             ],
           ),
