@@ -32,6 +32,7 @@ class _AlertdialogWidgetState extends State<AlertdialogWidget> {
   late BookmarksModel getBookmark ;
 
   bool? error;
+  final formkey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -91,33 +92,46 @@ class _AlertdialogWidgetState extends State<AlertdialogWidget> {
       title: Text("$method $type"),
       content: SizedBox(
         height: 200,
-        child: Column(
-          spacing: 16,
-          children: [
-            TextField(
-              controller:  controllerName,
-              decoration: InputDecoration(
-                labelText: type == "Folder" ? "Folder Name" : "Bookmark URL",
-                border: OutlineInputBorder(),
+        child: SingleChildScrollView(
+          child: Column(
+            spacing: 16,
+            children: [
+              Form(key: formkey,
+                  child:
+                  TextFormField(
+                    controller:  controllerName,
+                    decoration: InputDecoration(
+                      labelText: type == "Folder" ? "Folder Name" : "Bookmark URL",
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                      var error= type == "Folder" ?"Folder Name" : "Bookmark URL";
+                        return "$error must be not empty" ;
+                      }
+                      return null;
+                    },
+                  )
+              )
+             ,
+              TextField(
+                controller: controllerDesc,
+                decoration: InputDecoration(
+                  labelText: type == "Folder" ? "Folder Desc" : "Bookmark Desc",
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-            TextField(
-              controller: controllerDesc,
-              decoration: InputDecoration(
-                labelText: type == "Folder" ? "Folder Desc" : "Bookmark Desc",
-                border: OutlineInputBorder(),
+              TextField(
+                controller: controllerColor,
+                decoration: InputDecoration(
+                  labelText: type == "Folder"
+                      ? "Folder Color"
+                      : "Bookmark Content Type",
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-            TextField(
-              controller: controllerColor,
-              decoration: InputDecoration(
-                labelText: type == "Folder"
-                    ? "Folder Color"
-                    : "Bookmark Content Type",
-                border: OutlineInputBorder(),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       actions: [
@@ -125,79 +139,82 @@ class _AlertdialogWidgetState extends State<AlertdialogWidget> {
           onPressed: () {
             Navigator.pop(context);
           },
-          child: Text("cancel"),
+          child: Text("cancel",style: TextStyle(color: Colors.black),),
         ),
         TextButton(
           onPressed: () async {
-            try {
-              if (type == "Folder" && method == "Update") {
-                UpdateFolderModel data = UpdateFolderModel(
-                  id: id,
-                  name: controllerName.text,
-                  desc: controllerDesc.text,
-                  color: controllerColor.text,
-                );
-                await api.folderMethod.updateFolders(
-                  inputData: data,
-                );
-              } else if (type == "Folder" && method == "Create") {
-                CreateFolderModel data = CreateFolderModel(
-                  name: controllerName.text,
-                  desc: controllerDesc.text,
-                  color: controllerColor.text,
-                );
-              await api.folderMethod.createFolders(
-                  inputData: data,
-                );
-              } else if (type == "Bookmark" && method == "Create") {
-                CreateBookmarksModel data = CreateBookmarksModel(
-                  url: controllerName.text,
-                  desc: controllerDesc.text,
-                  content_type: controllerColor.text,
-                  is_ticked: false,
-                  folder_id: folderId,
-                );
-               await api.bookmarksMethod.createBookmark(
-                  inputData: data,
-                );
-              } else if (type == "Bookmark" && method == "Update") {
-                UpdateBookmarksModel data = UpdateBookmarksModel(
-                  id: id,
-                  url: controllerName.text,
-                  desc: controllerDesc.text,
-                  content_type: controllerColor.text,
-                  is_ticked: false,
-                  folder_id: folderId,
-                );
-                 await api.bookmarksMethod.updateBookmarks(
-                  inputData: data,
-                );
-              }
-              Navigator.pop(context, true);
+    if (formkey.currentState!.validate()) {
+      try {
+        if (type == "Folder" && method == "Update") {
+          UpdateFolderModel data = UpdateFolderModel(
+            id: id,
+            name: controllerName.text,
+            desc: controllerDesc.text,
+            color: controllerColor.text,
+          );
+          await api.folderMethod.updateFolders(
+            inputData: data,
+          );
+        } else if (type == "Folder" && method == "Create") {
+          CreateFolderModel data = CreateFolderModel(
+            name: controllerName.text,
+            desc: controllerDesc.text,
+            color: controllerColor.text,
+          );
+          await api.folderMethod.createFolders(
+            inputData: data,
+          );
+        } else if (type == "Bookmark" && method == "Create") {
+          CreateBookmarksModel data = CreateBookmarksModel(
+            url: controllerName.text,
+            desc: controllerDesc.text,
+            content_type: controllerColor.text,
+            is_ticked: false,
+            folder_id: folderId,
+          );
+          await api.bookmarksMethod.createBookmark(
+            inputData: data,
+          );
+        } else if (type == "Bookmark" && method == "Update") {
+          UpdateBookmarksModel data = UpdateBookmarksModel(
+            id: id,
+            url: controllerName.text,
+            desc: controllerDesc.text,
+            content_type: controllerColor.text,
+            is_ticked: false,
+            folder_id: folderId,
+          );
+          await api.bookmarksMethod.updateBookmarks(
+            inputData: data,
+          );
+        }
+        Navigator.pop(context, true);
 
-              ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-                SnackBar(
-                  backgroundColor:Color(0xFF21B7CA),
-                  content: Text(
-                    "$type has been ${method == "Update" ? "Updated" : "Created"}",
-                      style: TextStyle(fontSize: 20),),
-                ),
-              );
-            } on FormatException catch (error) {
-              ScaffoldMessenger.maybeOf(
-              context,
-              )?.showSnackBar(SnackBar(
-                  backgroundColor: Color(0xFFFE4A49),
-                  content: Text(error.message,style: TextStyle(fontSize: 20))));
-            } catch (error) {
-              ScaffoldMessenger.maybeOf(
-              context,
-              )?.showSnackBar(SnackBar(
-                  backgroundColor: Color(0xFFFE4A49),
-                  content: Text(error.toString(),style: TextStyle(fontSize: 20))));
-            }
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          SnackBar(
+            backgroundColor: Color.fromARGB(255, 72, 172, 255),
+            content: Text(
+              "$type has been ${method == "Update" ? "Updated" : "Created"}",
+              style: TextStyle(fontSize: 20),),
+          ),
+        );
+      } on FormatException catch (error) {
+        ScaffoldMessenger.maybeOf(
+          context,
+        )?.showSnackBar(SnackBar(
+            backgroundColor: Color(0xFFFE4A49),
+            content: Text(error.message, style: TextStyle(fontSize: 20))));
+      } catch (error) {
+        ScaffoldMessenger.maybeOf(
+          context,
+        )?.showSnackBar(SnackBar(
+            backgroundColor: Color(0xFFFE4A49),
+            content: Text(error.toString(), style: TextStyle(fontSize: 20))));
+      }
+    }
           },
-          child: Text(method == "Update" ? "update" : "create"),
+          child: Text(method == "Update" ? "update" : "create",
+          style: TextStyle(color: Colors.black),),
         ),
       ],
     );

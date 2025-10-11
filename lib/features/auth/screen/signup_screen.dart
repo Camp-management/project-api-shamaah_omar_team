@@ -21,14 +21,11 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
   final api = NetworkApi();
 
-  final TextEditingController controllerUserName = TextEditingController(
-    text: 'user@example.com',
-  );
-  final TextEditingController controllerPassword = TextEditingController(
-    text: 'string',
-  );
+  final TextEditingController controllerUserName = TextEditingController();
+  final TextEditingController controllerPassword = TextEditingController();
 
   bool _loading = false;
+
 
   Future<void> _handleSignup() async {
     if (_loading) return;
@@ -48,7 +45,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Account created & signed in')),
+        const SnackBar(backgroundColor:  Color.fromARGB(255, 72, 172, 255),
+            content: Text('Account created & signed in',
+            style: TextStyle(fontSize: 20),)),
       );
 
       // 3) Go straight into app
@@ -60,12 +59,18 @@ class _SignupScreenState extends State<SignupScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Parsing failed: $e')));
+      ).showSnackBar(SnackBar(
+          backgroundColor: const Color(0xFFFE4A49),
+          content: Text('Parsing failed: $e',
+            style: TextStyle(fontSize: 20),)));
     } on FormatException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(e.message)));
+      ).showSnackBar(SnackBar(
+          backgroundColor: const Color(0xFFFE4A49),
+          content: Text(e.message,
+            style: TextStyle(fontSize: 20),)));
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -74,7 +79,9 @@ class _SignupScreenState extends State<SignupScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
+      ).showSnackBar(SnackBar( backgroundColor: const Color(0xFFFE4A49),
+          content: Text(e.toString(),
+            style: TextStyle(fontSize: 20),)));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -107,93 +114,22 @@ class _SignupScreenState extends State<SignupScreen> {
               const SizedBox(height: 16),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  foregroundColor:Colors.black,
+                  backgroundColor: Color.fromARGB(255, 72, 172, 255),
+                  foregroundColor:Colors.white,
                   fixedSize: Size(350, 50),
                   shape:RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                 ),
-                onPressed: () async {
-                  try {
-                    final data = AuthInput(
-                      email: controllerUserName.text,
-                      password: controllerPassword.text,
-                    );
-
-                    // ignore: unused_local_variable
-                    final response = await api.authMethod.signupAccount(
-                      authData: data,
-                    );
-                    setState(() {});
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          backgroundColor:Color.fromARGB(255, 72, 172, 255),
-                          content: Text('Signed up successfully'
-                              ,style: TextStyle(fontSize: 20))),
-                    );
-
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const FolderScreen(),
-                      ),
-                    );
-                  } on MapperException catch (error) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        backgroundColor: Color(0xFFFE4A49),
-                        content: Text(
-                          'Signup succeeded but parsing failed: ${error.toString()}',
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-                    );
-                  } on FormatException catch (error) {
-                    final msg = error.toString();
-                    if (msg.contains('MapperException')) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Color(0xFFFE4A49),
-                          content: Text(
-                            'Signup response could\'t be parsed: $msg',
-                            style: TextStyle(fontSize: 20),
-                          ),
-                        ),
-                      );
-                    }
-                  } catch (error) {
-                    final msg = error.toString();
-                    if (msg.contains('MapperException')) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Color(0xFFFE4A49),
-                          content: Text(
-                            'Signup response couldn\'t be parsed: $msg',
-                            style: TextStyle(fontSize: 20),
-                          ),
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Color(0xFFFE4A49),
-                          content: Text(msg, style: TextStyle(fontSize: 20)),
-                        ),
-                      );
-                    }
-                  }
-                },
-                child: const Text("Sign up"),
+                onPressed: _loading ? null : _handleSignup,
+                child: Text(_loading ? 'Please wait…' : 'Signup'),
               ),
-              const SizedBox(height: 8),
-              const Text("You already have an account?"),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               Text("You already have an account?"),
               TextButton(
                   style: ButtonStyle(
-                    foregroundColor: WidgetStatePropertyAll<Color>(Colors.black),
+                    foregroundColor: WidgetStatePropertyAll<Color>(Color.fromARGB(255, 72, 172, 255),),
                   ),
                   onPressed: () {
                     Navigator.pushReplacement(
@@ -201,7 +137,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       MaterialPageRoute(builder: (_) => const LoginScreen()),
                     );
                   },
-                  child: Text('Sign in',)
+                  child: Text('Sign in',style: TextStyle(fontSize: 15),)
               ),
             ],
           ),

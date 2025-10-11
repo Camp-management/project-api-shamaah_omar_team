@@ -51,7 +51,10 @@ class _FolderScreenState extends State<FolderScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Logged out')));
+      ).showSnackBar(const SnackBar(
+          backgroundColor: Color.fromARGB(255, 72, 172, 255),
+          content: Text('Logged out',style:
+          TextStyle(fontSize: 20),)));
 
       Navigator.pushAndRemoveUntil(
         context,
@@ -62,7 +65,10 @@ class _FolderScreenState extends State<FolderScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Logout failed: $e')));
+      ).showSnackBar(SnackBar(
+      backgroundColor: Color.fromARGB(255, 72, 172, 255),
+          content: Text('Logout failed: $e',style:
+            TextStyle(fontSize: 20),)));
     }
   }
 
@@ -78,8 +84,7 @@ class _FolderScreenState extends State<FolderScreen> {
 
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: Text("Folders"),
-      leading: IconButton(onPressed: () => Scaffold.of(context).openDrawer(),
-          icon: Icon(Icons.more_horiz)),),
+      ),
       drawer: Drawer(
         child:
         Column(

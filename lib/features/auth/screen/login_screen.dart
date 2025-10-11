@@ -20,12 +20,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final api = NetworkApi();
   String? token;
 
-  final TextEditingController controllerUserName = TextEditingController(
-    text: 'user@example.com',
-  );
-  final TextEditingController controllerPassword = TextEditingController(
-    text: 'string',
-  );
+  final TextEditingController controllerUserName = TextEditingController();
+  final TextEditingController controllerPassword = TextEditingController();
 
   @override
   void initState() {
@@ -76,7 +72,8 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 30),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  foregroundColor:Colors.black,
+                  backgroundColor: Color.fromARGB(255, 72, 172, 255),
+                  foregroundColor:Colors.white,
                 fixedSize: Size(350, 50),
                     shape:RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
@@ -101,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         backgroundColor: Color.fromARGB(255, 72, 172, 255),
-                          content: Text('Signed in successfully',style: TextStyle(fontSize: 20))),
+                          content: Text('logged in successfully',style: TextStyle(fontSize: 20))),
                     );
 
                     Navigator.pushReplacement(
@@ -132,9 +129,9 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 10),
               const Text("You don't have an account?"),
               TextButton(
-                child: const Text('Sign Up'),
+                child: const Text('Sign Up',style: TextStyle(fontSize: 15),),
                 style: ButtonStyle(
-                  foregroundColor: WidgetStatePropertyAll<Color>(Colors.black),
+                  foregroundColor: WidgetStatePropertyAll<Color>(Color.fromARGB(255, 72, 172, 255),),
                 ),
                 onPressed: () {
                   Navigator.pushReplacement(

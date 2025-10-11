@@ -24,9 +24,9 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
   Map<String, bool> checkedMap = {};
   String get _storageKey => 'checked_bookmarks_${widget.folderId}';
   bool _isChecked(dynamic id, bool is_ticked) => checkedMap['$id'] == is_ticked;
-  Future<void> _toggleChecked(dynamic id) async {
+  Future<void> _toggleChecked(dynamic id,bool is_ticked) async {
     final key = '$id';
-    setState(() => checkedMap[key] = !(checkedMap[key] ?? false));
+    setState(() => checkedMap[key] = !(checkedMap[key] ?? is_ticked));
     await box.write(_storageKey, checkedMap);
   }
 
@@ -58,6 +58,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
     }
   }
 
+  /// open url (launcher)
   Future<void> _openUrl(BuildContext context, String raw) async {
     final normalized = raw.startsWith('http') ? raw : 'https://$raw';
     final uri = Uri.parse(normalized);
@@ -81,7 +82,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
   IconButton _buildTrailing(dynamic id, bool is_ticked) {
     final checked = _isChecked(id, is_ticked);
     return IconButton(
-      onPressed: () => _toggleChecked(id),
+      onPressed: () => _toggleChecked(id,is_ticked),
       tooltip: checked ? 'Uncheck' : 'Check',
       icon: AnimatedSwitcher(
         duration: const Duration(milliseconds: 200),
