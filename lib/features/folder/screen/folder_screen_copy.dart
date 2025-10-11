@@ -99,7 +99,6 @@ class _FolderScreenCopyState extends State<FolderScreenCopy> {
                 children: [
                   const Text("Folders", style: TextStyle(fontSize: 30)),
                   const SizedBox(height: 12),
-
                   TextField(
                     onChanged: (v) => setState(() => _query = v),
                     decoration: const InputDecoration(

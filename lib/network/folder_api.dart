@@ -171,10 +171,10 @@ class FolderApi {
       //   throw FormatException("Issue in get all Folder!!");
       throw FormatException();
     } on FormatException catch (errorg) {
-      print(errorg.message);
+      // print(errorg.message);
       throw FormatException(errorg.message);
     } catch (error) {
-      print(error.toString());
+      // print(error.toString());
       throw Exception(error);
     }
   }
