@@ -35,15 +35,12 @@ class _SignupScreenState extends State<SignupScreen> {
     setState(() => _loading = true);
 
     final creds = AuthInput(
-      email: controllerUserName.text.trim(),
+      email: controllerUserName.text,
       password: controllerPassword.text,
     );
 
     try {
-      // 1) Sign up (no token expected from this endpoint)
       await api.authMethod.signupAccount(authData: creds);
-
-      // 2) Immediately log in to obtain token
       final loginRes = await api.authMethod.loginAccount(authData: creds);
       final token = loginRes.access_token;
 
@@ -65,7 +62,6 @@ class _SignupScreenState extends State<SignupScreen> {
         context,
       ).showSnackBar(SnackBar(content: Text('Parsing failed: $e')));
     } on FormatException catch (e) {
-      // e.g., backend requires verification and login failed
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
