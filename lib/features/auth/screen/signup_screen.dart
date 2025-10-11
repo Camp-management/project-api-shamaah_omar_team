@@ -188,7 +188,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     }
                   }
                 },
-                child: const Text("Signup"),
+                child: const Text("Sign up"),
               ),
               const SizedBox(height: 8),
               const Text("You already have an account?"),
