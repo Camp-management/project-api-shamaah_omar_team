@@ -10,12 +10,11 @@ class CreateFolderModel with CreateFolderModelMappable {
   final String name;
   final String? desc;
   final String? color;
-//  final String? parent_folder;
 
 
 
   CreateFolderModel({ required this.name, this.desc,
-    this.color, //this.parent_folder,
+    this.color
   });
 
 

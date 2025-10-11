@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:smart_notes/common/custom_widegt/auth_text_field.dart';
 import 'package:smart_notes/features/auth/screen/signup_screen.dart';
-import 'package:smart_notes/features/folder/screen/folder_screen_copy.dart';
 import 'package:smart_notes/model/auth_input/auth_input.dart';
 import 'package:smart_notes/network/network_api.dart';
+
+import '../../folder/screen/folder_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -42,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (!mounted) return;
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const FolderScreenCopy()),
+          MaterialPageRoute(builder: (_) => const FolderScreen()),
         );
       });
     }
@@ -57,6 +58,8 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Text("Smart Notes",style: TextStyle(fontSize: 30),),
+              SizedBox(height: 30,),
               AuthTextField(
                 name: "Email",
                 isEmail: true,
@@ -70,8 +73,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 name: "Password",
                 isPassword: true,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 30),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor:Colors.black,
+                fixedSize: Size(350, 50),
+                    shape:RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                ),
                 onPressed: () async {
                   try {
                     final data = AuthInput(
@@ -89,33 +99,43 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     if (!mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Signed in successfully')),
+                      const SnackBar(
+                        backgroundColor: Color(0xFF21B7CA),
+                          content: Text('Signed in successfully',style: TextStyle(fontSize: 20))),
                     );
 
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const FolderScreenCopy(),
+                        builder: (context) => const FolderScreen(),
                       ),
                     );
                   } on FormatException catch (error) {
                     if (!mounted) return;
                     ScaffoldMessenger.of(
                       context,
-                    ).showSnackBar(SnackBar(content: Text(error.message)));
+                    ).showSnackBar(SnackBar(
+                        backgroundColor: Color(0xFFFE4A49),
+                        content: Text(error.message,style: TextStyle(fontSize: 20))));
                   } catch (error) {
                     if (!mounted) return;
                     ScaffoldMessenger.of(
                       context,
-                    ).showSnackBar(SnackBar(content: Text(error.toString())));
+                    ).showSnackBar(SnackBar(
+                        backgroundColor: Color(0xFFFE4A49),
+                        content: Text(error.toString(),style: TextStyle(fontSize: 20))));
                   }
                 },
-                child: const Text("Login"),
+                child: const Text("Login",style: TextStyle(
+                fontSize: 20),),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               const Text("You don't have an account?"),
               TextButton(
                 child: const Text('Sign Up'),
+                style: ButtonStyle(
+                  foregroundColor: WidgetStatePropertyAll<Color>(Colors.black),
+                ),
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,

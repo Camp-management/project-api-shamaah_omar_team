@@ -11,12 +11,11 @@ class UpdateFolderModel with UpdateFolderModelMappable {
   final String name;
   final String? desc;
   final String? color;
-//  final String? parent_folder;
 
 
 
   UpdateFolderModel({ required this.id, required this.name, this.desc,
-    this.color, //this.parent_folder,
+    this.color,
   });
 
 

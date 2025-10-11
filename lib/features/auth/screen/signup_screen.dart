@@ -4,9 +4,10 @@ import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_notes/common/custom_widegt/auth_text_field.dart';
 import 'package:smart_notes/features/auth/screen/login_screen.dart';
-import 'package:smart_notes/features/folder/screen/folder_screen_copy.dart';
 import 'package:smart_notes/model/auth_input/auth_input.dart';
 import 'package:smart_notes/network/network_api.dart';
+
+import '../../folder/screen/folder_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -63,20 +64,25 @@ class _SignupScreenState extends State<SignupScreen> {
                     setState(() {});
 
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Signed up successfully')),
+                      const SnackBar(
+                          backgroundColor:Color(0xFF21B7CA),
+                          content: Text('Signed up successfully'
+                              ,style: TextStyle(fontSize: 20))),
                     );
 
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const FolderScreenCopy(),
+                        builder: (context) => const FolderScreen(),
                       ),
                     );
                   } on MapperException catch (error) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
+                        backgroundColor: Color(0xFFFE4A49),
                         content: Text(
-                          'Signup succeeded but parsing failed: ${error.toString()}',
+                          'Signup succeeded but parsing failed: ${error.toString()}'
+                            ,style: TextStyle(fontSize: 20)
                         ),
                       ),
                     );
@@ -85,8 +91,10 @@ class _SignupScreenState extends State<SignupScreen> {
                     if (msg.contains('MapperException')) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
+                          backgroundColor: Color(0xFFFE4A49),
                           content: Text(
-                            'Signup response couldn\'t be parsed: $msg',
+                            'Signup response couldn\'t be parsed: $msg'
+                              ,style: TextStyle(fontSize: 20)
                           ),
                         ),
                       );
@@ -96,15 +104,19 @@ class _SignupScreenState extends State<SignupScreen> {
                     if (msg.contains('MapperException')) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
+                          backgroundColor: Color(0xFFFE4A49),
                           content: Text(
-                            'Signup response couldn\'t be parsed: $msg',
+                            'Signup response couldn\'t be parsed: $msg'
+                              ,style: TextStyle(fontSize: 20)
                           ),
                         ),
                       );
                     } else {
                       ScaffoldMessenger.of(
                         context,
-                      ).showSnackBar(SnackBar(content: Text(msg)));
+                      ).showSnackBar(SnackBar(
+                          backgroundColor: Color(0xFFFE4A49),
+                          content: Text(msg,style: TextStyle(fontSize: 20))));
                     }
                   }
                 },

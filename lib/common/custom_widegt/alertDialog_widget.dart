@@ -1,11 +1,9 @@
-// ignore_for_file: file_names, use_build_context_synchronously
-
 import 'package:flutter/material.dart';
+import 'package:smart_notes/model/bookmarks/bookmarks_model/bookmarks_model.dart';
 import 'package:smart_notes/model/bookmarks/create_bookmarks/create_bookmarks_model.dart';
 import 'package:smart_notes/model/bookmarks/update_bookmarks/update_bookmarks_model.dart';
-
 import '../../model/folder/create_folder/create_folder_model.dart';
-import '../../model/folder/folder_model.dart';
+import '../../model/folder/folder_model/folder_model.dart';
 import '../../model/folder/update_folder/update_folder_model.dart';
 import '../../network/network_api.dart';
 
@@ -25,13 +23,44 @@ class AlertdialogWidget extends StatefulWidget {
 }
 
 class _AlertdialogWidgetState extends State<AlertdialogWidget> {
-  TextEditingController controllerName = TextEditingController(text: "string");
-  TextEditingController controllerDesc = TextEditingController(text: "string");
-  TextEditingController controllerColor = TextEditingController(text: "string");
+  TextEditingController controllerName = TextEditingController();
+  TextEditingController controllerDesc = TextEditingController();
+  TextEditingController controllerColor = TextEditingController();
   final api = NetworkApi();
 
-  List<FolderModel> allFolder = [];
+  late FolderModel getFolder ;
+  late BookmarksModel getBookmark ;
+
   bool? error;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadData();
+  }
+
+
+
+  Future<void> loadData() async {
+
+    if(widget.method=="Update") {
+      if(widget.type == "Folder") {
+        getFolder = await api.folderMethod.getFolder(id:widget.id,);
+
+        controllerName.text = getFolder.name;
+        controllerDesc.text= getFolder.desc!;
+        controllerColor.text= getFolder.color!;
+      }
+      else  if(widget.type == "Bookmark") {
+        getBookmark = await api.bookmarksMethod.getBookmark(id:widget.id,);
+
+        controllerName.text = getBookmark.url;
+        controllerDesc.text= getBookmark.desc;
+        controllerColor.text= getBookmark.content_type;
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +86,7 @@ class _AlertdialogWidgetState extends State<AlertdialogWidget> {
     controllerDesc,
     controllerColor,
   ) {
+    /// return dialog based on folder or bookmarks
     return AlertDialog(
       title: Text("$method $type"),
       content: SizedBox(
@@ -65,7 +95,7 @@ class _AlertdialogWidgetState extends State<AlertdialogWidget> {
           spacing: 16,
           children: [
             TextField(
-              controller: controllerName,
+              controller:  controllerName,
               decoration: InputDecoration(
                 labelText: type == "Folder" ? "Folder Name" : "Bookmark URL",
                 border: OutlineInputBorder(),
@@ -107,9 +137,7 @@ class _AlertdialogWidgetState extends State<AlertdialogWidget> {
                   desc: controllerDesc.text,
                   color: controllerColor.text,
                 );
-
-                // ignore: unused_local_variable
-                final response = await api.folderObj.updateFolders(
+                await api.folderMethod.updateFolders(
                   inputData: data,
                 );
               } else if (type == "Folder" && method == "Create") {
@@ -118,8 +146,7 @@ class _AlertdialogWidgetState extends State<AlertdialogWidget> {
                   desc: controllerDesc.text,
                   color: controllerColor.text,
                 );
-                // ignore: unused_local_variable
-                final response = await api.folderObj.createFolders(
+              await api.folderMethod.createFolders(
                   inputData: data,
                 );
               } else if (type == "Bookmark" && method == "Create") {
@@ -130,8 +157,7 @@ class _AlertdialogWidgetState extends State<AlertdialogWidget> {
                   is_ticked: false,
                   folder_id: folderId,
                 );
-                // ignore: unused_local_variable
-                final response = await api.bookmarksMethod.createBookmark(
+               await api.bookmarksMethod.createBookmark(
                   inputData: data,
                 );
               } else if (type == "Bookmark" && method == "Update") {
@@ -143,8 +169,7 @@ class _AlertdialogWidgetState extends State<AlertdialogWidget> {
                   is_ticked: false,
                   folder_id: folderId,
                 );
-                // ignore: unused_local_variable
-                final response = await api.bookmarksMethod.updateBookmarks(
+                 await api.bookmarksMethod.updateBookmarks(
                   inputData: data,
                 );
               }
@@ -152,23 +177,25 @@ class _AlertdialogWidgetState extends State<AlertdialogWidget> {
 
               ScaffoldMessenger.maybeOf(context)?.showSnackBar(
                 SnackBar(
-                  backgroundColor: Colors.green,
+                  backgroundColor:Color(0xFF21B7CA),
                   content: Text(
-                    "$type has been  ${method == "Update" ? "Updated" : "Created"}",
-                  ),
+                    "$type has been ${method == "Update" ? "Updated" : "Created"}",
+                      style: TextStyle(fontSize: 20),),
                 ),
               );
-              // ignore: unused_catch_clause
             } on FormatException catch (error) {
-              // ScaffoldMessenger.maybeOf(
-              // context,
-              // )?.showSnackBar(SnackBar(content: Text(error.message)));
+              ScaffoldMessenger.maybeOf(
+              context,
+              )?.showSnackBar(SnackBar(
+                  backgroundColor: Color(0xFFFE4A49),
+                  content: Text(error.message,style: TextStyle(fontSize: 20))));
             } catch (error) {
-              // ScaffoldMessenger.maybeOf(
-              // context,
-              // )?.showSnackBar(SnackBar(content: Text(error.toString())));
+              ScaffoldMessenger.maybeOf(
+              context,
+              )?.showSnackBar(SnackBar(
+                  backgroundColor: Color(0xFFFE4A49),
+                  content: Text(error.toString(),style: TextStyle(fontSize: 20))));
             }
-            //  Navigator.pop(context);
           },
           child: Text(method == "Update" ? "update" : "create"),
         ),
