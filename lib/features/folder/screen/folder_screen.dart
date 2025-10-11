@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:smart_notes/model/folder/create_folder/create_folder_model.dart';
 import 'package:smart_notes/model/folder/folder_model.dart';
 
 import '../../../common/custom_widegt/alertDialog_widget.dart';
@@ -19,15 +18,14 @@ class _FolderScreenState extends State<FolderScreen> {
   List<FolderModel> allFolder = [];
   bool? error;
 
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadData();
   }
 
   loadData() async {
+    // ignore: unused_local_variable
     final box = GetStorage();
     //if(box.hasData("token")){
     // AuthModel authmodel=AuthModelMapper.fromMap(box.read("token"));
@@ -38,7 +36,7 @@ class _FolderScreenState extends State<FolderScreen> {
     //   error=true;
     // }
     setState(() {});
-   // print("show all data $allFolder");
+    // print("show all data $allFolder");
   }
 
   @override
@@ -53,48 +51,50 @@ class _FolderScreenState extends State<FolderScreen> {
                 children: [
                   Text("Folders", style: TextStyle(fontSize: 30)),
                   ...allFolder.map(
-                    (item) => Container(
-                      child: InkWell(
-                        onTap: () {
-                          // Navigator.push(context,MaterialPageRoute<void>
-                          // (builder:
-                          // (context) => ProductScreen(id:item.id,
-                          // image: item.image,
-                          // price: item.price,
-                          // )
-                          // ));
-                        },
-                        child: ListTile(
-                         // leading: Text(item.id.toString()),
-                          title: Text(item.name),
-                           subtitle:
-                           InkWell(
-                              onTap: ()  async {
-                             await showDialog(
-                                  context: context,
-                                  builder: (_) =>
-                                       AlertdialogWidget(type:"Folder",
-                                           method:"Update"
-                                         ,id: item.id.toString(),
-                                           folderId:"")
-                                );
+                    (item) => InkWell(
+                      onTap: () {
+                        // Navigator.push(context,MaterialPageRoute<void>
+                        // (builder:
+                        // (context) => ProductScreen(id:item.id,
+                        // image: item.image,
+                        // price: item.price,
+                        // )
+                        // ));
+                      },
+                      child: ListTile(
+                        // leading: Text(item.id.toString()),
+                        title: Text(item.name),
+                        subtitle: InkWell(
+                          onTap: () async {
+                            await showDialog(
+                              context: context,
+                              builder: (_) => AlertdialogWidget(
+                                type: "Folder",
+                                method: "Update",
+                                id: item.id.toString(),
+                                folderId: "",
+                              ),
+                            );
 
-                                await loadData();
-
-                              },
-                              child: Icon(Icons.edit_note_outlined,
-                                color: Colors.blueAccent,)),
-                          trailing:
-                          InkWell(
-                            onTap: (){
-                             // print(item.id.toString());
-                              api.folderObj.deleteFolders(id: item.id.toString());
+                            await loadData();
+                          },
+                          child: Icon(
+                            Icons.edit_note_outlined,
+                            color: Colors.blueAccent,
+                          ),
+                        ),
+                        trailing: InkWell(
+                          onTap: () {
+                            // print(item.id.toString());
+                            api.folderObj.deleteFolders(id: item.id.toString());
                             setState(() {
                               loadData();
                             });
-                            },
-                              child: Icon(Icons.delete_outline_outlined,
-                                color: Colors.red,))
+                          },
+                          child: Icon(
+                            Icons.delete_outline_outlined,
+                            color: Colors.red,
+                          ),
                         ),
                       ),
                     ),
@@ -105,15 +105,18 @@ class _FolderScreenState extends State<FolderScreen> {
           ),
         ),
       ),
+
       /// add new folder
       floatingActionButton: InkWell(
-        onTap: () async{
+        onTap: () async {
           await showDialog(
-          context: context,
-          builder: (_) =>
-              AlertdialogWidget(type:"Folder",
-                  method:"Update" ,id: "",
-                  folderId:"")
+            context: context,
+            builder: (_) => AlertdialogWidget(
+              type: "Folder",
+              method: "Update",
+              id: "",
+              folderId: "",
+            ),
           );
 
           await loadData();

@@ -33,6 +33,7 @@ class _FolderScreenCopyState extends State<FolderScreenCopy> {
   Future<void> loadData() async {
     setState(() => isLoading = true);
     try {
+      // ignore: unused_local_variable
       final box = GetStorage();
       allFolder = await api.folderObj.getAllFolders();
     } finally {
@@ -69,8 +70,7 @@ class _FolderScreenCopyState extends State<FolderScreenCopy> {
         ? allFolder
         : allFolder
               .where(
-                (f) =>
-                    (f.name ?? '').toLowerCase().contains(_query.toLowerCase()),
+                (f) => (f.name).toLowerCase().contains(_query.toLowerCase()),
               )
               .toList();
 
@@ -181,7 +181,7 @@ class _FolderScreenCopyState extends State<FolderScreenCopy> {
                                   context,
                                   MaterialPageRoute<void>(
                                     builder: (context) =>
-                                        BookmarksScreen(folder_id: item.id),
+                                        BookmarksScreen(folderId: item.id),
                                   ),
                                 );
                               },

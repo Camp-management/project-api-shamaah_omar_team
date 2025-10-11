@@ -19,8 +19,6 @@ class AuthApi {
       );
 
       if (response.statusCode.toString().startsWith('2')) {
-        print(response.body);
-
         return AuthModelMapper.fromMap(jsonDecode(response.body));
       }
 

@@ -21,7 +21,7 @@ class AuthModelMapper extends ClassMapperBase<AuthModel> {
   @override
   final String id = 'AuthModel';
 
-  static String _$access_token(AuthModel v) => v.access_token;
+  static String _$access_token(AuthModel v) => v.accessToken;
   static const Field<AuthModel, String> _f$access_token = Field(
     'access_token',
     _$access_token,
@@ -113,7 +113,7 @@ class _AuthModelCopyWithImpl<$R, $Out>
   );
   @override
   AuthModel $make(CopyWithData data) =>
-      AuthModel(data.get(#access_token, or: $value.access_token));
+      AuthModel(data.get(#access_token, or: $value.accessToken));
 
   @override
   AuthModelCopyWith<$R2, AuthModel, $Out2> $chain<$R2, $Out2>(

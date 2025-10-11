@@ -8,9 +8,9 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../common/custom_widegt/alertDialog_widget.dart';
 
 class BookmarksScreen extends StatefulWidget {
-  final dynamic folder_id;
+  final dynamic folderId;
 
-  const BookmarksScreen({super.key, required this.folder_id});
+  const BookmarksScreen({super.key, required this.folderId});
 
   @override
   State<BookmarksScreen> createState() => _BookmarksScreenState();
@@ -24,7 +24,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
   bool isLoading = false;
 
   Map<String, bool> checkedMap = {};
-  String get _storageKey => 'checked_bookmarks_${widget.folder_id}';
+  String get _storageKey => 'checked_bookmarks_${widget.folderId}';
   bool _isChecked(dynamic id) => checkedMap['$id'] == true;
   Future<void> _toggleChecked(dynamic id) async {
     final key = '$id';
@@ -52,7 +52,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
     setState(() => isLoading = true);
     try {
       allBookmarks = await api.bookmarksMethod.getBookmarksByFolder(
-        id: widget.folder_id,
+        id: widget.folderId,
       );
     } finally {
       if (mounted) setState(() => isLoading = false);
@@ -168,7 +168,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                                     type: "Bookmark",
                                     method: "Update",
                                     id: item.id.toString(),
-                                    folderId: widget.folder_id,
+                                    folderId: widget.folderId,
                                   ),
                                 );
                                 await loadData();
@@ -221,7 +221,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
               type: "Bookmark",
               method: "Create",
               id: "",
-              folderId: widget.folder_id,
+              folderId: widget.folderId,
             ),
           );
           await loadData();

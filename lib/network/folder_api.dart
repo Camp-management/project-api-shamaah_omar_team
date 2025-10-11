@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
 import '../model/folder/create_folder/create_folder_model.dart';
@@ -50,10 +49,7 @@ class FolderApi {
         headers: _constant.updateCreateHeader,
         body: inputData.toJson(),
       );
-      print("URL $url");
-      print("body ${inputData.toJson()}");
 
-      print("response ${response.body.toString()}");
       if (response.statusCode.toString().startsWith("2")) {
         // final folder=// jsonDecode(response.body);
         // CreateFolderModelMapper.fromMap(jsonDecode(response.body));
@@ -62,7 +58,6 @@ class FolderApi {
 
         final folder = CreateFolderModelMapper.fromMap(data);
 
-        print(folder);
         return folder;
 
         /// call Mapper to show data
@@ -114,10 +109,8 @@ class FolderApi {
       );
       var response = await http.delete(url, headers: _constant.foldersHeader);
 
-      print("URL $url");
       //  print("body ${inputData.toJson().runtimeType}");
 
-      print("response ${response.body.toString()}");
       if (response.statusCode.toString().startsWith("2")) {
         final folder = jsonDecode(response.body);
         //print(folder);

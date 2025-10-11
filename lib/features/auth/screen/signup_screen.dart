@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_notes/common/custom_widegt/auth_text_field.dart';
@@ -54,6 +56,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       password: controllerPassword.text,
                     );
 
+                    // ignore: unused_local_variable
                     final response = await api.authMethod.signupAccount(
                       authData: data,
                     );

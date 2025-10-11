@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:smart_notes/common/custom_widegt/auth_text_field.dart';
@@ -81,7 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       authData: data,
                     );
 
-                    token = response.access_token;
+                    token = response.accessToken;
                     final box = GetStorage();
                     await box.write("token", token);
 
