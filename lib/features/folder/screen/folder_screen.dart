@@ -77,9 +77,12 @@ class _FolderScreenState extends State<FolderScreen> {
         .toList();
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(centerTitle: true, title: Text("Folders"),
+      leading: IconButton(onPressed: () => Scaffold.of(context).openDrawer(),
+          icon: Icon(Icons.more_horiz)),),
       drawer: Drawer(
-        child: Column(
+        child:
+        Column(
           children: [
             const SizedBox(height: 40),
             ListTile(
@@ -99,15 +102,15 @@ class _FolderScreenState extends State<FolderScreen> {
               physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
                 children: [
-                  const Text("Folders", style: TextStyle(fontSize: 30)),
-                  const SizedBox(height: 12),
                   /// search
                   TextField(
                     onChanged: (v) => setState(() => _query = v),
                     decoration: const InputDecoration(
                       hintText: 'Search by folder name…',
                       prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10.0))
+                      ),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -136,63 +139,70 @@ class _FolderScreenState extends State<FolderScreen> {
                     else
                       ...items.map(
                             (item) => Column(
+                              spacing: 10,
                           children: [
-                            Slidable(
-                              key: ValueKey(item.id),
-                              endActionPane: ActionPane(
-                                motion: const ScrollMotion(),
-                                children: [
-                                  SlidableAction(
-                                    /// show dialog to update folder
-                                    onPressed: (_) async {
-                                      await showDialog(
-                                        context: context,
-                                        builder: (_) => AlertdialogWidget(
-                                          type: "Folder",
-                                          method: "Update",
-                                          id: item.id.toString(),
-                                          folderId: "",
-                                        ),
-                                      );
-                                      await loadData();
-                                    },
-                                    backgroundColor: const Color(0xFF21B7CA),
-                                    foregroundColor: Colors.white,
-                                    icon: Icons.archive,
-                                    label: 'Edit',
-                                  ),
-                                  SlidableAction(
-                                    /// delete folder
-                                    onPressed: (_) async {
-                                      await api.folderMethod.deleteFolders(
-                                        id: item.id.toString(),
-                                      );
-                                      await loadData();
-                                    },
-                                    backgroundColor: const Color(0xFFFE4A49),
-                                    foregroundColor: Colors.white,
-                                    icon: Icons.delete,
-                                    label: 'Delete',
-                                  ),
-                                ],
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: BoxBorder.all(color: Colors.black54)
                               ),
-                              child: ListTile(
-                                leading: const Icon(Icons.folder),
-                                title: Text(item.name),
-                                trailing: const Icon(Icons.swap_horiz),
-                                onTap: () {
-                                  /// go to bookmarks
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute<void>(
-                                      builder: (context) =>
-                                          BookmarksScreen(folderId: item.id),
+                              child: Slidable(
+                                key: ValueKey(item.id),
+                                endActionPane: ActionPane(
+                                  motion: const ScrollMotion(),
+                                  children: [
+                                    SlidableAction(
+                                      /// show dialog to update folder
+                                      onPressed: (_) async {
+                                        await showDialog(
+                                          context: context,
+                                          builder: (_) => AlertdialogWidget(
+                                            type: "Folder",
+                                            method: "Update",
+                                            id: item.id.toString(),
+                                            folderId: "",
+                                          ),
+                                        );
+                                        await loadData();
+                                      },
+                                      backgroundColor: Color.fromARGB(255, 72, 172, 255),
+                                      foregroundColor: Colors.white,
+                                      icon: Icons.archive,
+                                      label: 'Edit',
                                     ),
-                                  );
-                                },
+                                    SlidableAction(
+                                      /// delete folder
+                                      onPressed: (_) async {
+                                        await api.folderMethod.deleteFolders(
+                                          id: item.id.toString(),
+                                        );
+                                        await loadData();
+                                      },
+                                      backgroundColor: const Color(0xFFFE4A49),
+                                      foregroundColor: Colors.white,
+                                      icon: Icons.delete,
+                                      label: 'Delete',
+                                    ),
+                                  ],
+                                ),
+                                child: ListTile(
+                                  leading: Image(image: AssetImage("assets/images/folder.png"),height: 30,), // Icon(Icons.folder_copy_outlined),
+                                  title: Text(item.name),
+                                  trailing: Image(image: AssetImage("assets/images/swap.png"),height: 20,),
+                                  onTap: () {
+                                    /// go to bookmarks
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute<void>(
+                                        builder: (context) =>
+                                            BookmarksScreen(folderId: item.id),
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
                             ),
-                            const Divider(height: 1, color: Colors.black12),
+                             Divider(height: 1, color: Colors.transparent),
                           ],
                         ),
                       ),
@@ -216,7 +226,7 @@ class _FolderScreenState extends State<FolderScreen> {
           );
           await loadData();
         },
-        child: const Icon(Icons.folder_copy),
+        child: Image(image: AssetImage("assets/images/add-folder.png"),height: 60,),
       ),
     );
   }

@@ -23,7 +23,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
   bool isLoading = false;
   Map<String, bool> checkedMap = {};
   String get _storageKey => 'checked_bookmarks_${widget.folderId}';
-  bool _isChecked(dynamic id,bool is_ticked) => checkedMap['$id'] == is_ticked;
+  bool _isChecked(dynamic id, bool is_ticked) => checkedMap['$id'] == is_ticked;
   Future<void> _toggleChecked(dynamic id) async {
     final key = '$id';
     setState(() => checkedMap[key] = !(checkedMap[key] ?? false));
@@ -78,16 +78,26 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
     }
   }
 
-  IconButton _buildTrailing(dynamic id,bool is_ticked) {
-    final checked =  _isChecked(id,is_ticked);
+  IconButton _buildTrailing(dynamic id, bool is_ticked) {
+    final checked = _isChecked(id, is_ticked);
     return IconButton(
       onPressed: () => _toggleChecked(id),
       tooltip: checked ? 'Uncheck' : 'Check',
       icon: AnimatedSwitcher(
         duration: const Duration(milliseconds: 200),
         child: checked
-            ? const Icon(Icons.check_circle, key: ValueKey('on'))
-            : const Icon(Icons.radio_button_unchecked, key: ValueKey('off')),
+            ? const Icon(
+                Icons.check_box,
+                size: 30,
+                color: Color.fromARGB(255, 72, 172, 255),
+                key: ValueKey('on'),
+              )
+            : const Icon(
+                Icons.check_box_outline_blank,
+                color: Color.fromARGB(255, 72, 172, 255),
+                size: 30,
+                key: ValueKey('off'),
+              ),
       ),
     );
   }
@@ -120,13 +130,17 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
+                spacing: 10,
                 children: [
+                  /// search
                   TextField(
                     onChanged: (v) => setState(() => _query = v),
                     decoration: const InputDecoration(
                       hintText: 'Search by URL…',
                       prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -152,55 +166,71 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                       ),
                     )
                   else
-                    ...items.map( /// show list of bookmarks and  slide to update or delete
-                      (item) => Slidable(
-                        key: ValueKey(item.id),
-                        endActionPane: ActionPane(
-                          motion: const ScrollMotion(),
-                          children: [
-                            SlidableAction( /// update
-                              onPressed: (_) async {
-                                await showDialog(
-                                  context: context, /// show dialog to update data
-                                  builder: (_) => AlertdialogWidget(
-                                    type: "Bookmark",
-                                    method: "Update",
-                                    id: item.id.toString(),
-                                    folderId: widget.folderId,
-                                  ),
-                                );
-                                await loadData();
-                              },
-                              backgroundColor: const Color(0xFF21B7CA),
-                              foregroundColor: Colors.white,
-                              icon: Icons.archive,
-                              label: 'Edit',
-                            ),
-                            SlidableAction( /// delete the bookmark
-                              onPressed: (_) async { /// call delete api
-                                await api.bookmarksMethod.deleteBookmarks(
-                                  id: item.id.toString(),
-                                );
-                                await loadData();
-                              },
-                              backgroundColor: const Color(0xFFFE4A49),
-                              foregroundColor: Colors.white,
-                              icon: Icons.delete,
-                              label: 'Delete',
-                            ),
-                          ],
+                    ...items.map(
+                      /// show list of bookmarks and  slide to update or delete
+                      (item) => Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: BoxBorder.all(color: Colors.black54),
                         ),
-                        child: ListTile( /// show bookmark details
-                          onTap: () => _openUrl(context, item.url),
-                          leading: const Image(
-                            image: AssetImage("assets/images/bookmark.png"),
-                            height: 35,
+                        child: Slidable(
+                          key: ValueKey(item.id),
+                          endActionPane: ActionPane(
+                            motion: const ScrollMotion(),
+                            children: [
+                              SlidableAction(
+                                /// update
+                                onPressed: (_) async {
+                                  await showDialog(
+                                    context: context,
+
+                                    /// show dialog to update data
+                                    builder: (_) => AlertdialogWidget(
+                                      type: "Bookmark",
+                                      method: "Update",
+                                      id: item.id.toString(),
+                                      folderId: widget.folderId,
+                                    ),
+                                  );
+                                  await loadData();
+                                },
+                                backgroundColor: Color.fromARGB(
+                                  255,
+                                  72,
+                                  172,
+                                  255,
+                                ),
+                                foregroundColor: Colors.white,
+                                icon: Icons.archive,
+                                label: 'Edit',
+                              ),
+                              SlidableAction(
+                                /// delete the bookmark
+                                onPressed: (_) async {
+                                  /// call delete api
+                                  await api.bookmarksMethod.deleteBookmarks(
+                                    id: item.id.toString(),
+                                  );
+                                  await loadData();
+                                },
+                                backgroundColor: const Color(0xFFFE4A49),
+                                foregroundColor: Colors.white,
+                                icon: Icons.delete,
+                                label: 'Delete',
+                              ),
+                            ],
                           ),
-                          title: Text(item.url),
-                          subtitle: Text(item.desc),
-                          trailing: _buildTrailing(item.id,item.is_ticked),
-                          shape: const UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.black54),
+                          child: ListTile(
+                            /// show bookmark details
+                            contentPadding: EdgeInsets.only(left: 0,right: 20 ),
+                            onTap: () => _openUrl(context, item.url),
+                            leading: _buildTrailing(item.id, item.is_ticked),
+                            trailing: const Image(
+                              image: AssetImage("assets/images/swap.png"),
+                              height: 20,
+                            ),
+                            title: Text(item.url),
+                            subtitle: Text(item.desc),
                           ),
                         ),
                       ),
@@ -211,6 +241,8 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
           ),
         ),
       ),
+
+      /// create new bookmarks
       floatingActionButton: InkWell(
         onTap: () async {
           await showDialog(
@@ -225,8 +257,8 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
           await loadData();
         },
         child: const Image(
-          image: AssetImage("assets/images/add_bookmark.png"),
-          height: 40,
+          image: AssetImage("assets/images/bookmark-add.png"),
+          height: 60,
         ),
       ),
     );

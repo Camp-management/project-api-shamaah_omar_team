@@ -35,6 +35,8 @@ class _SignupScreenState extends State<SignupScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Text("Smart Notes",style: TextStyle(fontSize: 30),),
+              SizedBox(height: 30,),
               AuthTextField(
                 name: "email",
                 isEmail: true,
@@ -50,6 +52,13 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor:Colors.black,
+                  fixedSize: Size(350, 50),
+                  shape:RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
                 onPressed: () async {
                   try {
                     final data = AuthInput(
@@ -65,7 +74,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                          backgroundColor:Color(0xFF21B7CA),
+                          backgroundColor:Color.fromARGB(255, 72, 172, 255),
                           content: Text('Signed up successfully'
                               ,style: TextStyle(fontSize: 20))),
                     );
@@ -122,11 +131,14 @@ class _SignupScreenState extends State<SignupScreen> {
                 },
                 child: const Text("Signup"),
               ),
+               SizedBox(height: 10),
 
-              Text("You alrady have an account?"),
+              Text("You already have an account?"),
               TextButton(
-                child: Text('Sign in'),
-
+                child: Text('Sign in',),
+                style: ButtonStyle(
+                  foregroundColor: WidgetStatePropertyAll<Color>(Colors.black),
+                ),
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
