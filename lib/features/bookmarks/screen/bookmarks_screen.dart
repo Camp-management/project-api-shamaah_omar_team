@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:smart_notes/model/bookmarks/bookmarks_model/bookmarks_model.dart';
 import 'package:smart_notes/network/network_api.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../common/custom_widegt/alertDialog_widget.dart';
 
@@ -15,26 +17,100 @@ class BookmarksScreen extends StatefulWidget {
 }
 
 class _BookmarksScreenState extends State<BookmarksScreen> {
-  var api = NetworkApi();
+  final api = NetworkApi();
+  final box = GetStorage();
 
   List<BookmarksModel> allBookmarks = [];
-  bool? error;
+  bool isLoading = false;
+
+  // --- existing checkmark persistence ---
+  Map<String, bool> checkedMap = {};
+  String get _storageKey => 'checked_bookmarks_${widget.folder_id}';
+  bool _isChecked(dynamic id) => checkedMap['$id'] == true;
+  Future<void> _toggleChecked(dynamic id) async {
+    final key = '$id';
+    setState(() => checkedMap[key] = !(checkedMap[key] ?? false));
+    await box.write(_storageKey, checkedMap);
+  }
+
+  String _query = '';
 
   @override
   void initState() {
     super.initState();
+    _loadCheckedMap();
     loadData();
   }
 
+  void _loadCheckedMap() {
+    final raw = box.read<Map>(_storageKey);
+    if (raw != null) {
+      checkedMap = raw.map((k, v) => MapEntry(k.toString(), v == true));
+    }
+  }
+
   Future<void> loadData() async {
-    allBookmarks = await api.bookmarksMethod.getBookmarksByFolder(
-      id: widget.folder_id,
+    setState(() => isLoading = true);
+    try {
+      allBookmarks = await api.bookmarksMethod.getBookmarksByFolder(
+        id: widget.folder_id,
+      );
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
+  }
+
+  Future<void> _openUrl(BuildContext context, String raw) async {
+    final normalized = raw.trim().startsWith('http')
+        ? raw.trim()
+        : 'https://${raw.trim()}';
+    final uri = Uri.parse(normalized);
+
+    try {
+      final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!ok && context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Could not open link')));
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to open link: $e')));
+      }
+    }
+  }
+
+  Widget _buildTrailing(dynamic id) {
+    final checked = _isChecked(id);
+    return IconButton(
+      onPressed: () => _toggleChecked(id),
+      tooltip: checked ? 'Uncheck' : 'Check',
+      icon: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 200),
+        transitionBuilder: (child, anim) =>
+            ScaleTransition(scale: anim, child: child),
+        child: checked
+            ? const Icon(Icons.check_circle, key: ValueKey('on'))
+            : const Icon(Icons.radio_button_unchecked, key: ValueKey('off')),
+      ),
     );
-    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    // filter by URL only (basic)
+    final items = _query.isEmpty
+        ? allBookmarks
+        : allBookmarks
+              .where(
+                (b) => (b.url ?? '').toString().toLowerCase().contains(
+                  _query.toLowerCase(),
+                ),
+              )
+              .toList();
+
     return Scaffold(
       appBar: AppBar(
         leading: InkWell(
@@ -52,13 +128,40 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  // Text("Bookmarks for: ${widget.folder_id}"),
-                  ...allBookmarks.map(
-                    (item) => InkWell(
-                      onTap: () {
-                        // navigate to details if needed
-                      },
-                      child: Slidable(
+                  TextField(
+                    onChanged: (v) => setState(() => _query = v),
+                    decoration: const InputDecoration(
+                      hintText: 'Search by URL…',
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  if (isLoading)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 40),
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  else if (allBookmarks.isEmpty && _query.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 40),
+                      child: Text(
+                        'Pull down to refresh',
+                        style: TextStyle(color: Colors.black54),
+                      ),
+                    )
+                  else if (_query.isNotEmpty && items.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 40),
+                      child: Text(
+                        'No results',
+                        style: TextStyle(color: Colors.black54),
+                      ),
+                    )
+                  else
+                    ...items.map(
+                      (item) => Slidable(
                         key: ValueKey(item.id),
                         endActionPane: ActionPane(
                           motion: const ScrollMotion(),
@@ -96,29 +199,18 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                           ],
                         ),
                         child: ListTile(
+                          onTap: () => _openUrl(context, item.url),
                           leading: const Image(
                             image: AssetImage("assets/images/bookmark.png"),
                             height: 35,
                           ),
                           title: Text(item.url),
                           subtitle: Text(item.desc),
-                          trailing: const Image(
-                            image: AssetImage("assets/images/swap.png"),
-                            height: 25,
-                          ),
+                          trailing: _buildTrailing(item.id),
                           shape: const UnderlineInputBorder(
                             borderSide: BorderSide(color: Colors.black54),
                           ),
                         ),
-                      ),
-                    ),
-                  ),
-                  if (allBookmarks.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 40),
-                      child: Text(
-                        'Pull down to refresh',
-                        style: TextStyle(color: Colors.black54),
                       ),
                     ),
                 ],

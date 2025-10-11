@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:smart_notes/model/auth/auth_model.dart';
+import 'package:smart_notes/model/auth/auth_signup/signup_model.dart';
 import 'package:smart_notes/model/auth_input/auth_input.dart';
 import 'package:smart_notes/network/constant_api.dart';
 
@@ -19,7 +20,7 @@ class AuthApi {
 
       if (response.statusCode.toString().startsWith('2')) {
         print(response.body);
-        // return AuthModelMapper.fromJson(response.body);
+
         return AuthModelMapper.fromMap(jsonDecode(response.body));
       }
 
@@ -31,7 +32,7 @@ class AuthApi {
     }
   }
 
-  Future<AuthModel> signupAccount({required AuthInput authData}) async {
+  Future<SignupModel> signupAccount({required AuthInput authData}) async {
     try {
       final url = Uri.parse(_constant.baseURL + _constant.signUpEndPoint);
       final response = await http.post(
@@ -40,7 +41,7 @@ class AuthApi {
         body: authData.toJson(),
       );
       if (response.statusCode.toString().startsWith('2')) {
-        return AuthModelMapper.fromJson(response.body);
+        return SignupModelMapper.fromJson(response.body);
       }
 
       throw FormatException("There is error with your data try send it");

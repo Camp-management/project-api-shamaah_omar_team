@@ -1,6 +1,5 @@
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:smart_notes/features/auth/screen/login_screen.dart';
 import 'package:smart_notes/features/folder/screen/folder_screen_copy.dart';
 import 'package:smart_notes/model/auth_input/auth_input.dart';
@@ -15,8 +14,6 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final api = NetworkApi();
-
-  String? token;
 
   final TextEditingController controllerUserName = TextEditingController(
     text: 'user@example.com',
@@ -55,7 +52,7 @@ class _SignupScreenState extends State<SignupScreen> {
               ElevatedButton(
                 onPressed: () async {
                   try {
-                    AuthInput data = AuthInput(
+                    final data = AuthInput(
                       email: controllerUserName.text,
                       password: controllerPassword.text,
                     );
@@ -63,14 +60,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     final response = await api.authMethod.signupAccount(
                       authData: data,
                     );
-
-                    // token = response.access_token;
-                    // final box = GetStorage();
-                    // box.write("token", token);
-
-                    setState(() {
-                      // token = response.access_token;
-                    });
+                    setState(() {});
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Signed up successfully')),
@@ -83,8 +73,6 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                     );
                   } on MapperException catch (error) {
-                    // Handle cases where the mapper fails to parse the response
-                    // (e.g., signup returns no token or different JSON shape)
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
@@ -104,7 +92,6 @@ class _SignupScreenState extends State<SignupScreen> {
                       );
                     }
                   } catch (error) {
-                    // Fallback: if your mapper throws a different type but includes "Mapper"
                     final msg = error.toString();
                     if (msg.contains('MapperException')) {
                       ScaffoldMessenger.of(context).showSnackBar(

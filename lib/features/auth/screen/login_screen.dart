@@ -30,14 +30,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _redirectIfLoggedIn() async {
-    // Read token from storage
     final box = GetStorage();
     final saved = box.read<String>('token');
 
     if (saved != null && saved.isNotEmpty) {
-      // Optional: attach to your API headers globally if you do that
-      // api.authMethod.setToken(saved); // if you exposed such a method
-
       // Navigate after first frame to avoid context issues in initState
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;

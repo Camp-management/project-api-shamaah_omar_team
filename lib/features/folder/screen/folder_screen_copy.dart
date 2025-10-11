@@ -6,7 +6,7 @@ import 'package:smart_notes/model/folder/folder_model.dart';
 import '../../../common/custom_widegt/alertDialog_widget.dart';
 import '../../../network/network_api.dart';
 import '../../bookmarks/screen/bookmarks_screen.dart';
-import '../../auth/screen/login_screen.dart'; // <-- add this import
+import '../../auth/screen/login_screen.dart';
 
 class FolderScreenCopy extends StatefulWidget {
   const FolderScreenCopy({super.key});
@@ -19,7 +19,10 @@ class _FolderScreenCopyState extends State<FolderScreenCopy> {
   final api = NetworkApi();
 
   List<FolderModel> allFolder = [];
+  bool isLoading = false;
   bool? error;
+
+  String _query = '';
 
   @override
   void initState() {
@@ -28,9 +31,13 @@ class _FolderScreenCopyState extends State<FolderScreenCopy> {
   }
 
   Future<void> loadData() async {
-    final box = GetStorage();
-    allFolder = await api.folderObj.getAllFolders();
-    setState(() {});
+    setState(() => isLoading = true);
+    try {
+      final box = GetStorage();
+      allFolder = await api.folderObj.getAllFolders();
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
   }
 
   Future<void> _logout() async {
@@ -43,7 +50,6 @@ class _FolderScreenCopyState extends State<FolderScreenCopy> {
         context,
       ).showSnackBar(const SnackBar(content: Text('Logged out')));
 
-      // Go to Login and clear back stack
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -59,6 +65,15 @@ class _FolderScreenCopyState extends State<FolderScreenCopy> {
 
   @override
   Widget build(BuildContext context) {
+    final items = _query.isEmpty
+        ? allFolder
+        : allFolder
+              .where(
+                (f) =>
+                    (f.name ?? '').toLowerCase().contains(_query.toLowerCase()),
+              )
+              .toList();
+
     return Scaffold(
       appBar: AppBar(),
       drawer: Drawer(
@@ -73,82 +88,115 @@ class _FolderScreenCopyState extends State<FolderScreenCopy> {
           ],
         ),
       ),
-
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-
           child: RefreshIndicator(
-            onRefresh: loadData, // must return Future<void>
+            onRefresh: loadData,
             child: SingleChildScrollView(
-              physics:
-                  const AlwaysScrollableScrollPhysics(), // enable pull even if short
+              physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
                 children: [
                   const Text("Folders", style: TextStyle(fontSize: 30)),
-                  ...allFolder.map(
-                    (item) => InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute<void>(
-                            builder: (context) =>
-                                BookmarksScreen(folder_id: item.id),
-                          ),
-                        );
-                      },
-                      child: Slidable(
-                        key: ValueKey(item.id),
-                        endActionPane: ActionPane(
-                          motion: const ScrollMotion(),
-                          children: [
-                            SlidableAction(
-                              onPressed: (_) async {
-                                await showDialog(
-                                  context: context,
-                                  builder: (_) => AlertdialogWidget(
-                                    type: "Folder",
-                                    method: "Update",
-                                    id: item.id.toString(),
-                                    folderId: "",
-                                  ),
-                                );
-                                await loadData();
-                              },
-                              backgroundColor: const Color(0xFF21B7CA),
-                              foregroundColor: Colors.white,
-                              icon: Icons.archive,
-                              label: 'Edit',
-                            ),
-                            SlidableAction(
-                              onPressed: (_) async {
-                                await api.folderObj.deleteFolders(
-                                  id: item.id.toString(),
-                                );
-                                await loadData();
-                              },
-                              backgroundColor: const Color(0xFFFE4A49),
-                              foregroundColor: Colors.white,
-                              icon: Icons.delete,
-                              label: 'Delete',
-                            ),
-                          ],
-                        ),
-                        child: ListTile(
-                          leading: const Icon(Icons.folder),
-                          title: Text(item.name),
-                          trailing: const Icon(Icons.swap_horiz),
-                        ),
-                      ),
+                  const SizedBox(height: 12),
+
+                  TextField(
+                    onChanged: (v) => setState(() => _query = v),
+                    decoration: const InputDecoration(
+                      hintText: 'Search by folder name…',
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(),
                     ),
                   ),
+                  const SizedBox(height: 12),
+
+                  if (isLoading)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 40),
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  else if (allFolder.isEmpty && _query.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 40),
+                      child: Text(
+                        'Pull down to refresh',
+                        style: TextStyle(color: Colors.black54),
+                      ),
+                    )
+                  else if (_query.isNotEmpty && items.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 40),
+                      child: Text(
+                        'No results',
+                        style: TextStyle(color: Colors.black54),
+                      ),
+                    )
+                  else
+                    ...items.map(
+                      (item) => Column(
+                        children: [
+                          Slidable(
+                            key: ValueKey(item.id),
+                            endActionPane: ActionPane(
+                              motion: const ScrollMotion(),
+                              children: [
+                                SlidableAction(
+                                  onPressed: (_) async {
+                                    await showDialog(
+                                      context: context,
+                                      builder: (_) => AlertdialogWidget(
+                                        type: "Folder",
+                                        method: "Update",
+                                        id: item.id.toString(),
+                                        folderId: "",
+                                      ),
+                                    );
+                                    await loadData();
+                                  },
+                                  backgroundColor: const Color(0xFF21B7CA),
+                                  foregroundColor: Colors.white,
+                                  icon: Icons.archive,
+                                  label: 'Edit',
+                                ),
+                                SlidableAction(
+                                  onPressed: (_) async {
+                                    await api.folderObj.deleteFolders(
+                                      id: item.id.toString(),
+                                    );
+                                    await loadData();
+                                  },
+                                  backgroundColor: const Color(0xFFFE4A49),
+                                  foregroundColor: Colors.white,
+                                  icon: Icons.delete,
+                                  label: 'Delete',
+                                ),
+                              ],
+                            ),
+                            child: ListTile(
+                              leading: const Icon(Icons.folder),
+                              title: Text(item.name),
+                              trailing: const Icon(Icons.swap_horiz),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute<void>(
+                                    builder: (context) =>
+                                        BookmarksScreen(folder_id: item.id),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          const Divider(height: 1, color: Colors.black12),
+                        ],
+                      ),
+                    ),
                 ],
               ),
             ),
           ),
         ),
       ),
-
       floatingActionButton: InkWell(
         onTap: () async {
           await showDialog(
