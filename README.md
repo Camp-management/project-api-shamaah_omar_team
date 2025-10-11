@@ -36,6 +36,11 @@ A clean, lightweight Flutter app for managing **lists of bookmarks inside folder
 ---
 ## 📸 Demo Video
 
+https://github.com/user-attachments/assets/4669d3e8-6a01-47bb-b894-6539464475fd
+
+
+
+
 
 ---
 
