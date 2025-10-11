@@ -83,7 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       authData: data,
                     );
 
-                    token = response.accessToken;
+                    token = response.access_token;
                     final box = GetStorage();
                     await box.write("token", token);
 
