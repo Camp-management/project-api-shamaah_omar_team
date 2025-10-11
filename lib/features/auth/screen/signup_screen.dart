@@ -1,5 +1,6 @@
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_notes/common/custom_widegt/auth_text_field.dart';
 import 'package:smart_notes/features/auth/screen/login_screen.dart';
 import 'package:smart_notes/features/folder/screen/folder_screen_copy.dart';
 import 'package:smart_notes/model/auth_input/auth_input.dart';
@@ -31,22 +32,18 @@ class _SignupScreenState extends State<SignupScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextField(
+              AuthTextField(
+                name: "email",
+                isEmail: true,
                 controller: controllerUserName,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: "Email",
-                  border: OutlineInputBorder(),
-                ),
               ),
+
               const SizedBox(height: 16),
-              TextField(
+
+              AuthTextField(
                 controller: controllerPassword,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: "Password",
-                  border: OutlineInputBorder(),
-                ),
+                name: "Password",
+                isPassword: true,
               ),
               const SizedBox(height: 16),
               ElevatedButton(

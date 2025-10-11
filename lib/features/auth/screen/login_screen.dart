@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:smart_notes/common/custom_widegt/auth_text_field.dart';
 import 'package:smart_notes/features/auth/screen/signup_screen.dart';
 import 'package:smart_notes/features/folder/screen/folder_screen_copy.dart';
 import 'package:smart_notes/model/auth_input/auth_input.dart';
@@ -54,22 +55,18 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextField(
+              AuthTextField(
+                name: "Email",
+                isEmail: true,
                 controller: controllerUserName,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: "Email",
-                  border: OutlineInputBorder(),
-                ),
               ),
+
               const SizedBox(height: 16),
-              TextField(
+
+              AuthTextField(
                 controller: controllerPassword,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: "Password",
-                  border: OutlineInputBorder(),
-                ),
+                name: "Password",
+                isPassword: true,
               ),
               const SizedBox(height: 16),
               ElevatedButton(
