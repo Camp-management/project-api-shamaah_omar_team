@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../model/folder/create_folder/create_folder_model.dart';
-import '../model/folder/folder_model.dart';
+import '../model/folder/folder_model/folder_model.dart';
 import '../model/folder/update_folder/update_folder_model.dart';
 import 'constant_api.dart';
 
@@ -13,7 +13,6 @@ class FolderApi {
     try {
       var url = Uri.parse(_constant.baseURL + _constant.folderEndPoint);
       var response = await http.get(url, headers: _constant.foldersHeader);
-
       if (response.statusCode.toString().startsWith("2")) {
         final folder = jsonDecode(response.body);
 
@@ -24,8 +23,7 @@ class FolderApi {
 
         return allFolders;
       }
-      //   throw FormatException("Issue in get all Folder!!");
-      throw FormatException();
+      throw FormatException("Issue in get all Folder!!");
     } on FormatException catch (_) {
       rethrow;
     } catch (error) {
@@ -34,14 +32,12 @@ class FolderApi {
   }
 
   /// create new folder
-  Future<CreateFolderModel> createFolders({
-    required CreateFolderModel inputData,
-  }) async {
+  Future<CreateFolderModel> createFolders({required CreateFolderModel inputData,}) async {
     try {
       var url = Uri.parse(_constant.baseURL + _constant.createFolderEndPoint);
       var response = await http.post(
         url,
-        headers: _constant.updateCreateHeader,
+        headers: _constant.subHeader,
         body: inputData.toJson(),
       );
 
@@ -53,7 +49,7 @@ class FolderApi {
 
         return folder;
       }
-      throw FormatException("Issue in show all Folder!!");
+      throw FormatException("Issue in create Folder!!");
     } on FormatException catch (_) {
       rethrow;
     } catch (error) {
@@ -75,7 +71,7 @@ class FolderApi {
         final folder = jsonDecode(response.body);
         return folder;
       }
-      throw FormatException("Issue in delete Folder!!");
+      throw FormatException("Issue in deleting Folder!!");
     } on FormatException catch (_) {
       rethrow;
     } catch (error) {
@@ -84,16 +80,14 @@ class FolderApi {
   }
 
   ///update folder
-  Future<UpdateFolderModel> updateFolders({
-    required UpdateFolderModel inputData,
-  }) async {
+  Future<UpdateFolderModel> updateFolders({required UpdateFolderModel inputData,}) async {
     try {
       var url = Uri.parse(
         "${_constant.baseURL}${_constant.updateFolderEndPoint}${inputData.id}",
       );
       var response = await http.put(
         url,
-        headers: _constant.updateCreateHeader,
+        headers: _constant.subHeader,
         body: inputData.toJson(),
       );
 
@@ -106,11 +100,37 @@ class FolderApi {
 
         return folder;
       }
-      throw FormatException("Issue in update Folder!!");
+      throw FormatException("Issue in updating Folder!!");
     } on FormatException catch (_) {
       rethrow;
     } catch (error) {
       throw Exception(error);
     }
   }
+
+  /// get folder by id
+  Future<FolderModel> getFolder({required String id}) async {
+    try {
+      var url = Uri.parse(
+        "${_constant.baseURL}${_constant.getFolderEndPoint}$id",
+      );
+      var response = await http.get(url, headers: _constant.subHeader);
+
+      if (response.statusCode.toString().startsWith("2")) {
+        /// call Mapper to show data
+         final json = jsonDecode(response.body);
+        final data = json['folder'];
+        FolderModel allFolders =  FolderModelMapper.fromMap(data);
+        return allFolders;
+      }
+    throw FormatException("Issue in get Folder!!");
+    } on FormatException catch (_) {
+      rethrow;
+    } catch (error) {
+      throw Exception(error);
+    }
+  }
+
+
+
 }

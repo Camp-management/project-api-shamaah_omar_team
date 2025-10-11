@@ -19,13 +19,11 @@ class BookmarksScreen extends StatefulWidget {
 class _BookmarksScreenState extends State<BookmarksScreen> {
   final api = NetworkApi();
   final box = GetStorage();
-
   List<BookmarksModel> allBookmarks = [];
   bool isLoading = false;
-
   Map<String, bool> checkedMap = {};
   String get _storageKey => 'checked_bookmarks_${widget.folderId}';
-  bool _isChecked(dynamic id) => checkedMap['$id'] == true;
+  bool _isChecked(dynamic id,bool is_ticked) => checkedMap['$id'] == is_ticked;
   Future<void> _toggleChecked(dynamic id) async {
     final key = '$id';
     setState(() => checkedMap[key] = !(checkedMap[key] ?? false));
@@ -48,6 +46,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
     }
   }
 
+  /// load bookmarks list
   Future<void> loadData() async {
     setState(() => isLoading = true);
     try {
@@ -79,8 +78,8 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
     }
   }
 
-  IconButton _buildTrailing(dynamic id) {
-    final checked = _isChecked(id);
+  IconButton _buildTrailing(dynamic id,bool is_ticked) {
+    final checked =  _isChecked(id,is_ticked);
     return IconButton(
       onPressed: () => _toggleChecked(id),
       tooltip: checked ? 'Uncheck' : 'Check',
@@ -131,7 +130,6 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
-
                   if (isLoading)
                     const Padding(
                       padding: EdgeInsets.only(top: 40),
@@ -154,16 +152,16 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                       ),
                     )
                   else
-                    ...items.map(
+                    ...items.map( /// show list of bookmarks and  slide to update or delete
                       (item) => Slidable(
                         key: ValueKey(item.id),
                         endActionPane: ActionPane(
                           motion: const ScrollMotion(),
                           children: [
-                            SlidableAction(
+                            SlidableAction( /// update
                               onPressed: (_) async {
                                 await showDialog(
-                                  context: context,
+                                  context: context, /// show dialog to update data
                                   builder: (_) => AlertdialogWidget(
                                     type: "Bookmark",
                                     method: "Update",
@@ -178,8 +176,8 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                               icon: Icons.archive,
                               label: 'Edit',
                             ),
-                            SlidableAction(
-                              onPressed: (_) async {
+                            SlidableAction( /// delete the bookmark
+                              onPressed: (_) async { /// call delete api
                                 await api.bookmarksMethod.deleteBookmarks(
                                   id: item.id.toString(),
                                 );
@@ -192,7 +190,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                             ),
                           ],
                         ),
-                        child: ListTile(
+                        child: ListTile( /// show bookmark details
                           onTap: () => _openUrl(context, item.url),
                           leading: const Image(
                             image: AssetImage("assets/images/bookmark.png"),
@@ -200,7 +198,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                           ),
                           title: Text(item.url),
                           subtitle: Text(item.desc),
-                          trailing: _buildTrailing(item.id),
+                          trailing: _buildTrailing(item.id,item.is_ticked),
                           shape: const UnderlineInputBorder(
                             borderSide: BorderSide(color: Colors.black54),
                           ),
