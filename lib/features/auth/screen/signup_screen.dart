@@ -105,7 +105,7 @@ class _SignupScreenState extends State<SignupScreen> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _loading ? null : _handleSignup,
-                child: Text(_loading ? 'Please wait…' : 'Signup'),
+                child: Text(_loading ? 'Please wait…' : 'Sign up'),
               ),
               const SizedBox(height: 8),
               const Text("You already have an account?"),
