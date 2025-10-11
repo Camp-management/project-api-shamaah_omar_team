@@ -23,7 +23,6 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
   List<BookmarksModel> allBookmarks = [];
   bool isLoading = false;
 
-  // --- existing checkmark persistence ---
   Map<String, bool> checkedMap = {};
   String get _storageKey => 'checked_bookmarks_${widget.folder_id}';
   bool _isChecked(dynamic id) => checkedMap['$id'] == true;
@@ -61,9 +60,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
   }
 
   Future<void> _openUrl(BuildContext context, String raw) async {
-    final normalized = raw.trim().startsWith('http')
-        ? raw.trim()
-        : 'https://${raw.trim()}';
+    final normalized = raw.startsWith('http') ? raw : 'https://$raw';
     final uri = Uri.parse(normalized);
 
     try {
@@ -82,15 +79,13 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
     }
   }
 
-  Widget _buildTrailing(dynamic id) {
+  IconButton _buildTrailing(dynamic id) {
     final checked = _isChecked(id);
     return IconButton(
       onPressed: () => _toggleChecked(id),
       tooltip: checked ? 'Uncheck' : 'Check',
       icon: AnimatedSwitcher(
         duration: const Duration(milliseconds: 200),
-        transitionBuilder: (child, anim) =>
-            ScaleTransition(scale: anim, child: child),
         child: checked
             ? const Icon(Icons.check_circle, key: ValueKey('on'))
             : const Icon(Icons.radio_button_unchecked, key: ValueKey('off')),
@@ -100,12 +95,11 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // filter by URL only (basic)
     final items = _query.isEmpty
         ? allBookmarks
         : allBookmarks
               .where(
-                (b) => (b.url ?? '').toString().toLowerCase().contains(
+                (b) => (b.url).toString().toLowerCase().contains(
                   _query.toLowerCase(),
                 ),
               )
