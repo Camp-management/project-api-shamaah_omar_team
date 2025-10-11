@@ -160,7 +160,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         SnackBar(
                           backgroundColor: Color(0xFFFE4A49),
                           content: Text(
-                            'Signup response couldn\'t be parsed: $msg',
+                            'Signup response could\'t be parsed: $msg',
                             style: TextStyle(fontSize: 20),
                           ),
                         ),
@@ -196,7 +196,6 @@ class _SignupScreenState extends State<SignupScreen> {
 
               Text("You already have an account?"),
               TextButton(
-                child: Text('Sign in',),
                 style: ButtonStyle(
                   foregroundColor: WidgetStatePropertyAll<Color>(Colors.black),
                 ),
@@ -206,6 +205,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     MaterialPageRoute(builder: (_) => const LoginScreen()),
                   );
                 },
+                child: Text('Sign in',)
               ),
             ],
           ),
