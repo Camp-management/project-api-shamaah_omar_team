@@ -87,17 +87,17 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
         duration: const Duration(milliseconds: 200),
         child: checked
             ? const Icon(
-                Icons.check_box,
-                size: 30,
-                color: Color.fromARGB(255, 72, 172, 255),
-                key: ValueKey('on'),
-              )
+          Icons.check_box,
+          size: 30,
+          color: Color.fromARGB(255, 72, 172, 255),
+          key: ValueKey('on'),
+        )
             : const Icon(
-                Icons.check_box_outline_blank,
-                color: Color.fromARGB(255, 72, 172, 255),
-                size: 30,
-                key: ValueKey('off'),
-              ),
+          Icons.check_box_outline_blank,
+          color: Color.fromARGB(255, 72, 172, 255),
+          size: 30,
+          key: ValueKey('off'),
+        ),
       ),
     );
   }
@@ -107,12 +107,12 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
     final items = _query.isEmpty
         ? allBookmarks
         : allBookmarks
-              .where(
-                (b) => (b.url).toString().toLowerCase().contains(
-                  _query.toLowerCase(),
-                ),
-              )
-              .toList();
+        .where(
+          (b) => (b.url).toString().toLowerCase().contains(
+        _query.toLowerCase(),
+      ),
+    )
+        .toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -158,83 +158,83 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                       ),
                     )
                   else if (_query.isNotEmpty && items.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 40),
-                      child: Text(
-                        'No results',
-                        style: TextStyle(color: Colors.black54),
-                      ),
-                    )
-                  else
-                    ...items.map(
-                      /// show list of bookmarks and  slide to update or delete
-                      (item) => Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: BoxBorder.all(color: Colors.black54),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 40),
+                        child: Text(
+                          'No results',
+                          style: TextStyle(color: Colors.black54),
                         ),
-                        child: Slidable(
-                          key: ValueKey(item.id),
-                          endActionPane: ActionPane(
-                            motion: const ScrollMotion(),
-                            children: [
-                              SlidableAction(
-                                /// update
-                                onPressed: (_) async {
-                                  await showDialog(
-                                    context: context,
+                      )
+                    else
+                      ...items.map(
+                        /// show list of bookmarks and  slide to update or delete
+                            (item) => Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: BoxBorder.all(color: Colors.black54),
+                          ),
+                          child: Slidable(
+                            key: ValueKey(item.id),
+                            endActionPane: ActionPane(
+                              motion: const ScrollMotion(),
+                              children: [
+                                SlidableAction(
+                                  /// update
+                                  onPressed: (_) async {
+                                    await showDialog(
+                                      context: context,
 
-                                    /// show dialog to update data
-                                    builder: (_) => AlertdialogWidget(
-                                      type: "Bookmark",
-                                      method: "Update",
-                                      id: item.id.toString(),
-                                      folderId: widget.folderId,
-                                    ),
-                                  );
-                                  await loadData();
-                                },
-                                backgroundColor: Color.fromARGB(
-                                  255,
-                                  72,
-                                  172,
-                                  255,
+                                      /// show dialog to update data
+                                      builder: (_) => AlertdialogWidget(
+                                        type: "Bookmark",
+                                        method: "Update",
+                                        id: item.id.toString(),
+                                        folderId: widget.folderId,
+                                      ),
+                                    );
+                                    await loadData();
+                                  },
+                                  backgroundColor: Color.fromARGB(
+                                    255,
+                                    72,
+                                    172,
+                                    255,
+                                  ),
+                                  foregroundColor: Colors.white,
+                                  icon: Icons.archive,
+                                  label: 'Edit',
                                 ),
-                                foregroundColor: Colors.white,
-                                icon: Icons.archive,
-                                label: 'Edit',
-                              ),
-                              SlidableAction(
-                                /// delete the bookmark
-                                onPressed: (_) async {
-                                  /// call delete api
-                                  await api.bookmarksMethod.deleteBookmarks(
-                                    id: item.id.toString(),
-                                  );
-                                  await loadData();
-                                },
-                                backgroundColor: const Color(0xFFFE4A49),
-                                foregroundColor: Colors.white,
-                                icon: Icons.delete,
-                                label: 'Delete',
-                              ),
-                            ],
-                          ),
-                          child: ListTile(
-                            /// show bookmark details
-                            contentPadding: EdgeInsets.only(left: 0,right: 20 ),
-                            onTap: () => _openUrl(context, item.url),
-                            leading: _buildTrailing(item.id, item.is_ticked),
-                            trailing: const Image(
-                              image: AssetImage("assets/images/swap.png"),
-                              height: 20,
+                                SlidableAction(
+                                  /// delete the bookmark
+                                  onPressed: (_) async {
+                                    /// call delete api
+                                    await api.bookmarksMethod.deleteBookmarks(
+                                      id: item.id.toString(),
+                                    );
+                                    await loadData();
+                                  },
+                                  backgroundColor: const Color(0xFFFE4A49),
+                                  foregroundColor: Colors.white,
+                                  icon: Icons.delete,
+                                  label: 'Delete',
+                                ),
+                              ],
                             ),
-                            title: Text(item.url),
-                            subtitle: Text(item.desc),
+                            child: ListTile(
+                              /// show bookmark details
+                              contentPadding: EdgeInsets.only(left: 0,right: 20 ),
+                              onTap: () => _openUrl(context, item.url),
+                              leading: _buildTrailing(item.id, item.is_ticked),
+                              trailing: const Image(
+                                image: AssetImage("assets/images/swap.png"),
+                                height: 20,
+                              ),
+                              title: Text(item.url),
+                              subtitle: Text(item.desc),
+                            ),
                           ),
                         ),
                       ),
-                    ),
                 ],
               ),
             ),
@@ -264,3 +264,4 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
     );
   }
 }
+
